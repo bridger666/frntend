@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Preview Test - Aivory</title>
+    <link rel="stylesheet" href="design-system.css">
+    <style>
+        body {
+            background: #0f0820;
+            font-family: 'Inter Tight', sans-serif;
+            padding: 2rem;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 3rem;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        .test-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .test-card:hover {
+            background: rgba(7, 209, 151, 0.1);
+            border-color: rgba(7, 209, 151, 0.3);
+            transform: translateY(-2px);
+        }
+        .test-card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .test-card p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            margin: 0;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Workflow Preview Test</h1>
+        <p class="subtitle">Click any card to test the workflow visualization</p>
+
+        <div class="test-grid">
+            <div class="test-card" onclick="testSimpleWorkflow()">
+                <h3>Simple Linear Workflow</h3>
+                <p>3 nodes • 2 connections</p>
+            </div>
+
+            <div class="test-card" onclick="testComplexWorkflow()">
+                <h3>Complex Branching</h3>
+                <p>6 nodes • 5 connections</p>
+            </div>
+
+            <div class="test-card" onclick="testParallelWorkflow()">
+                <h3>Parallel Processing</h3>
+                <p>6 nodes • 7 connections</p>
+            </div>
+
+            <div class="test-card" onclick="testCustomTypes()">
+                <h3>Custom Node Types</h3>
+                <p>3 nodes • 2 connections</p>
+            </div>
+
+            <div class="test-card" onclick="testSingleNode()">
+                <h3>Single Node</h3>
+                <p>1 node • 0 connections</p>
+            </div>
+
+            <div class="test-card" onclick="testEmptyWorkflow()">
+                <h3>Empty (Error Test)</h3>
+                <p>0 nodes • 0 connections</p>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 1rem;">Example Usage</h2>
+        <div class="code-block">
+            <pre>// In your console.js, when AI returns a workflow:
+window.showWorkflowPreview({
+  nodes: [
+    { id: '1', label: 'Webhook', type: 'webhook', description: 'Receives data' },
+    { id: '2', label: 'AI Agent', type: 'ai_agent', description: 'Processes with GPT-4' },
+    { id: '3', label: 'CRM Push', type: 'crm_push', description: 'Updates Salesforce' }
+  ],
+  edges: [
+    { id: 'e1', source: '1', target: '2', label: 'Raw Data' },
+    { id: 'e2', source: '2', target: '3', label: 'Enriched Data' }
+  ]
+});</pre>
+        </div>
+    </div>
+
+    <script src="workflow-preview.js"></script>
+    <script>
+        // Test data
+        const mockWorkflows = {
+            simple: {
+                nodes: [
+                    { id: '1', label: 'Webhook Trigger', type: 'webhook', description: 'Receives incoming data' },
+                    { id: '2', label: 'AI Agent', type: 'ai_agent', description: 'Processes with GPT-4' },
+                    { id: '3', label: 'CRM Push', type: 'crm_push', description: 'Updates Salesforce' }
+                ],
+                edges: [
+                    { id: 'e1-2', source: '1', target: '2', label: 'Raw Data' },
+                    { id: 'e2-3', source: '2', target: '3', label: 'Enriched Data' }
+                ]
+            },
+            complex: {
+                nodes: [
+                    { id: 'webhook-1', label: 'Form Submission', type: 'webhook', description: 'Customer inquiry form' },
+                    { id: 'ai-1', label: 'Intent Classifier', type: 'ai_agent', description: 'Categorizes inquiry type' },
+                    { id: 'db-1', label: 'Check Database', type: 'database', description: 'Look up customer history' },
+                    { id: 'ai-2', label: 'Response Generator', type: 'ai_agent', description: 'Creates personalized response' },
+                    { id: 'email-1', label: 'Send Email', type: 'email', description: 'Automated reply' },
+                    { id: 'crm-1', label: 'Update CRM', type: 'crm_push', description: 'Log interaction' }
+                ],
+                edges: [
+                    { id: 'e1', source: 'webhook-1', target: 'ai-1', label: 'Form Data' },
+                    { id: 'e2', source: 'ai-1', target: 'db-1', label: 'Customer ID' },
+                    { id: 'e3', source: 'db-1', target: 'ai-2', label: 'History' },
+                    { id: 'e4', source: 'ai-2', target: 'email-1', label: 'Response' },
+                    { id: 'e5', source: 'ai-2', target: 'crm-1', label: 'Log Entry' }
+                ]
+            },
+            parallel: {
+                nodes: [
+                    { id: 'start', label: 'Data Ingestion', type: 'webhook', description: 'Batch data upload' },
+                    { id: 'process-1', label: 'Sentiment Analysis', type: 'ai_agent', description: 'Analyze customer feedback' },
+                    { id: 'process-2', label: 'Entity Extraction', type: 'ai_agent', description: 'Extract key information' },
+                    { id: 'process-3', label: 'Category Tagging', type: 'ai_agent', description: 'Auto-categorize content' },
+                    { id: 'merge', label: 'Merge Results', type: 'database', description: 'Combine all analyses' },
+                    { id: 'output', label: 'Generate Report', type: 'email', description: 'Send summary email' }
+                ],
+                edges: [
+                    { id: 'e1', source: 'start', target: 'process-1' },
+                    { id: 'e2', source: 'start', target: 'process-2' },
+                    { id: 'e3', source: 'start', target: 'process-3' },
+                    { id: 'e4', source: 'process-1', target: 'merge' },
+                    { id: 'e5', source: 'process-2', target: 'merge' },
+                    { id: 'e6', source: 'process-3', target: 'merge' },
+                    { id: 'e7', source: 'merge', target: 'output' }
+                ]
+            },
+            custom: {
+                nodes: [
+                    { id: '1', label: 'Custom Trigger', type: 'custom_webhook', description: 'Special webhook handler' },
+                    { id: '2', label: 'ML Model', type: 'machine_learning', description: 'TensorFlow inference' },
+                    { id: '3', label: 'Slack Notification', type: 'slack', description: 'Send to #alerts channel' }
+                ],
+                edges: [
+                    { id: 'e1-2', source: '1', target: '2' },
+                    { id: 'e2-3', source: '2', target: '3' }
+                ]
+            },
+            single: {
+                nodes: [
+                    { id: '1', label: 'Standalone Task', type: 'ai_agent', description: 'Independent process' }
+                ],
+                edges: []
+            },
+            empty: {
+                nodes: [],
+                edges: []
+            }
+        };
+
+        function testSimpleWorkflow() {
+            window.showWorkflowPreview(mockWorkflows.simple);
+        }
+
+        function testComplexWorkflow() {
+            window.showWorkflowPreview(mockWorkflows.complex);
+        }
+
+        function testParallelWorkflow() {
+            window.showWorkflowPreview(mockWorkflows.parallel);
+        }
+
+        function testCustomTypes() {
+            window.showWorkflowPreview(mockWorkflows.custom);
+        }
+
+        function testSingleNode() {
+            window.showWorkflowPreview(mockWorkflows.single);
+        }
+
+        function testEmptyWorkflow() {
+            window.showWorkflowPreview(mockWorkflows.empty);
+        }
+    </script>
+</body>
+</html>

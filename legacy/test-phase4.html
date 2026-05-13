@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 4 Testing - Typography, Badge & Upsell</title>
+    <link rel="stylesheet" href="design-system.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .test-section h2 {
+            color: #07d197;
+            margin-top: 0;
+            font-family: 'Inter Tight', sans-serif;
+            font-weight: 300;
+        }
+        .test-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Inter Tight', sans-serif;
+        }
+        .test-item {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: white; font-family: 'Inter Tight', sans-serif; font-weight: 300;">Phase 4 Testing Page</h1>
+    <p style="color: rgba(255, 255, 255, 0.7); font-family: 'Inter Tight', sans-serif;">Visual verification of typography, badge, and upsell changes</p>
+
+    <!-- Typography Testing -->
+    <div class="test-section">
+        <h2>1. Typography Testing</h2>
+        
+        <div class="test-item">
+            <div class="test-label">Score Number (5rem, Inter Tight 300)</div>
+            <div class="score-number">58</div>
+        </div>
+
+        <div class="test-item">
+            <div class="test-label">Score Category (1.75rem, Inter Tight 200)</div>
+            <div class="score-category">AI Ready</div>
+        </div>
+
+        <div class="test-item">
+            <div class="test-label">Category Explanation (Inter Tight 200)</div>
+            <div class="category-explanation">Your organization demonstrates strong AI readiness with established processes and infrastructure.</div>
+        </div>
+    </div>
+
+    <!-- Badge Testing -->
+    <div class="test-section">
+        <h2>2. Badge Testing</h2>
+        
+        <div class="test-item">
+            <div class="test-label">Badge with Brand Purple & Logo</div>
+            <div id="badge-container" style="max-width: 400px;"></div>
+        </div>
+
+        <div class="test-item">
+            <div class="test-label">Test Different Scores</div>
+            <button class="cta-button primary" onclick="testBadge(40, 'AI Curious')">Score 40</button>
+            <button class="cta-button primary" onclick="testBadge(60, 'AI Emerging')">Score 60</button>
+            <button class="cta-button primary" onclick="testBadge(80, 'AI Ready')">Score 80</button>
+            <button class="cta-button primary" onclick="testBadge(95, 'AI Native')">Score 95</button>
+        </div>
+    </div>
+
+    <!-- Upsell Section Testing -->
+    <div class="test-section">
+        <h2>3. Upsell Section Testing</h2>
+        
+        <div class="test-item">
+            <div class="test-label">Two-Card Layout (Desktop)</div>
+            <div id="upsell-test-container"></div>
+        </div>
+
+        <div class="test-item">
+            <div class="test-label">Test Different Score Contexts</div>
+            <button class="cta-button primary" onclick="testUpsell(40)">Score 40 Context</button>
+            <button class="cta-button primary" onclick="testUpsell(60)">Score 60 Context</button>
+            <button class="cta-button primary" onclick="testUpsell(80)">Score 80 Context</button>
+            <button class="cta-button primary" onclick="testUpsell(95)">Score 95 Context</button>
+        </div>
+    </div>
+
+    <!-- Mobile Preview -->
+    <div class="test-section">
+        <h2>4. Mobile Preview</h2>
+        <div class="test-label">Resize browser to < 768px to test mobile layout</div>
+        <p style="color: rgba(255, 255, 255, 0.7); font-family: 'Inter Tight', sans-serif; font-size: 0.875rem;">
+            Expected behavior:<br>
+            - Upsell cards stack vertically<br>
+            - Blueprint card appears first<br>
+            - Padding reduces to 32px 24px<br>
+            - Price size reduces to 2.5rem
+        </p>
+    </div>
+
+    <!-- Integration Testing -->
+    <div class="test-section">
+        <h2>5. Integration Testing</h2>
+        <div class="test-label">Test Links</div>
+        <ul style="color: rgba(255, 255, 255, 0.8); font-family: 'Inter Tight', sans-serif;">
+            <li><a href="index.html" style="color: #07d197;">Go to Homepage</a></li>
+            <li><a href="index.html#free-diagnostic" style="color: #07d197;">Start Free Diagnostic</a></li>
+            <li><a href="dashboard.html" style="color: #07d197;">View Dashboard</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Test badge generation
+        function testBadge(score, category) {
+            const container = document.getElementById('badge-container');
+            
+            // Simulate badge SVG (simplified for testing)
+            const brandPurple = '#4F2D9E';
+            const svg = `<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="250" fill="${brandPurple}" rx="15"/>
+                <circle cx="350" cy="50" r="60" fill="rgba(255,255,255,0.08)"/>
+                <circle cx="50" cy="200" r="40" fill="rgba(255,255,255,0.08)"/>
+                <text x="200" y="100" font-size="72" fill="white" 
+                      text-anchor="middle" font-weight="300" font-family="'Inter Tight', sans-serif">
+                  ${Math.round(score)}
+                </text>
+                <text x="200" y="140" font-size="24" fill="white" 
+                      text-anchor="middle" font-weight="200" font-family="'Inter Tight', sans-serif">
+                  ${category}
+                </text>
+                <text x="200" y="170" font-size="14" fill="rgba(255,255,255,0.7)" 
+                      text-anchor="middle" font-weight="200" font-family="'Inter Tight', sans-serif">
+                  Diagnostic Score
+                </text>
+                <text x="200" y="210" font-size="14" fill="rgba(255,255,255,0.8)" 
+                      text-anchor="middle" font-weight="300" font-family="'Inter Tight', sans-serif">
+                  Aivory
+                </text>
+              </svg>`;
+            
+            container.innerHTML = svg;
+        }
+
+        // Test upsell section
+        function testUpsell(score) {
+            let snapshotContext = '';
+            let blueprintContext = '';
+            
+            if (score <= 40) {
+                snapshotContext = "At your current readiness level, AI Snapshot will help you identify the 3 highest-impact automation opportunities to get you started.";
+                blueprintContext = "Build your foundation first with AI Snapshot, then scale with the full Blueprint.";
+            } else if (score <= 60) {
+                snapshotContext = "You're building momentum. AI Snapshot will pinpoint the gaps holding back your AI adoption and give you a clear action plan.";
+                blueprintContext = "Ready to accelerate? AI System Blueprint will help you architect a scalable AI system across your organization.";
+            } else if (score <= 80) {
+                snapshotContext = "You have strong foundations. AI Snapshot will identify optimization opportunities to maximize your AI ROI.";
+                blueprintContext = "You have strong foundations. AI System Blueprint will help you architect a scalable AI system across your organization.";
+            } else {
+                snapshotContext = "You're ahead of the curve. AI Snapshot will help you identify cutting-edge opportunities to maintain your competitive advantage.";
+                blueprintContext = "You're ahead of the curve. AI System Blueprint will help you optimize and scale what's already working.";
+            }
+            
+            const container = document.getElementById('upsell-test-container');
+            container.innerHTML = `
+                <div class="upsell-section">
+                    <h3 class="upsell-title">Unlock Deeper Insights</h3>
+                    <p class="upsell-subtitle">You've completed the free diagnostic. Now unlock AI-powered analysis:</p>
+                    
+                    <div class="upsell-cards">
+                        <div class="upsell-card">
+                            <h4 class="upsell-product-name">AI Snapshot</h4>
+                            <div class="upsell-price">$15</div>
+                            <p class="upsell-context">${snapshotContext}</p>
+                            <p class="upsell-description">Get AI-powered readiness analysis with recommended use cases and priority actions.</p>
+                            <button class="upsell-button" onclick="alert('Snapshot clicked!')">
+                                Run AI Snapshot — $15
+                            </button>
+                        </div>
+                        
+                        <div class="upsell-card upsell-featured">
+                            <div class="upsell-badge">BEST VALUE</div>
+                            <h4 class="upsell-product-name">AI System Blueprint</h4>
+                            <div class="upsell-price">$79</div>
+                            <p class="upsell-context">${blueprintContext}</p>
+                            <p class="upsell-description">Get complete AI system design with workflow architecture, agent structure, and deployment plan.</p>
+                            <button class="upsell-button" onclick="alert('Blueprint clicked!')">
+                                Generate Blueprint — $79
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize with default values
+        testBadge(58, 'AI Ready');
+        testUpsell(60);
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aivory Dashboard</title>
+    <link rel="stylesheet" href="dashboard-v2.css?v=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Dashboard Navigation -->
+    <nav class="dashboard-navbar">
+        <div class="dashboard-nav-container">
+            <div class="dashboard-logo">
+                <img src="aivory_logo.png" alt="Aivory" style="height: 32px;">
+            </div>
+            <div class="dashboard-nav-right">
+                <div class="tier-indicator">
+                    <span class="tier-badge" id="tierBadge">Free</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar" id="dashboardSidebar">
+            <!-- Navigation items will be rendered here -->
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="dashboard-main">
+            <div class="dashboard-container" id="dashboardContainer">
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState" style="display: none;">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Loading your dashboard...</p>
+                </div>
+
+                <!-- Error State -->
+                <div class="error-state" id="errorState" style="display: none;">
+                    <div class="error-card">
+                        <h2>Unable to Load Dashboard</h2>
+                        <p>Please try refreshing the page or contact support if the issue persists.</p>
+                        <button class="cta-button primary" onclick="location.reload()">Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content (rendered dynamically) -->
+                <div id="dashboardContent"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="dashboard-v2.js?v=1"></script>
+</body>
+</html>

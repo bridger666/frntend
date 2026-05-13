@@ -1,0 +1,1090 @@
+/**
+ * AIVORY AI CONSOLE - PREMIUM REDESIGN
+ * Manus/Grok/Perplexity/ChatGPT-inspired minimal dark aesthetic
+ * 
+ * Design Principles:
+ * - Deep dark premium theme (#0f0f17 background)
+ * - Generous spacing and breathing room (line-height 1.7-1.8)
+ * - Elevated input bar with shadow/blur
+ * - Page-level scrolling (no inner scrollbars)
+ * - Clean typography, no emojis
+ * - Spacious tables with hover effects
+ */
+
+/* ============================================================================
+   ROOT & RESET
+   ============================================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    min-height: 100vh;
+    background: #272728;
+    color: #e0e0e0;
+    font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* ============================================================================
+   LAYOUT CONTAINER
+   ============================================================================ */
+
+.chat-container {
+    display: flex;
+    min-height: 100vh;
+    background: #272728;
+}
+
+/* ============================================================================
+   SIDEBAR
+   ============================================================================ */
+
+.sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: #1b1b1c;
+    border-right: 1px solid #333338;
+    padding: 2rem 1rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 0 0.75rem 2rem;
+    border-bottom: 1px solid #333338;
+    margin-bottom: 2rem;
+}
+
+.sidebar-logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    color: #a0a0a8;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.sidebar-nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+}
+
+.sidebar-nav-item.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.sidebar-nav-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-nav-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: #ffffff;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* ============================================================================
+   MAIN CONTENT AREA
+   ============================================================================ */
+
+.main-content {
+    flex: 1;
+    margin-left: 220px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 140px; /* Space for fixed input bar */
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+
+.chat-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #333338;
+    background: #272728;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.header-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid #333338;
+    border-radius: 8px;
+    color: #a0a0a8;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.header-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #444448;
+    color: #e0e0e0;
+}
+
+/* ============================================================================
+   MESSAGE LIST
+   ============================================================================ */
+
+.message-list {
+    flex: 1;
+    padding: 2rem 2rem 3rem;
+    overflow: visible;
+}
+
+.message-list-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Generous gap between messages */
+}
+
+/* ============================================================================
+   MESSAGES - USER & AI
+   ============================================================================ */
+
+.message {
+    display: flex;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #1b1b1c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #333338;
+}
+
+.message-avatar svg {
+    width: 20px;
+    height: 20px;
+    color: #a0a0a8;
+}
+
+.message-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-text {
+    color: #e0e0e0;
+    font-size: 0.9375rem;
+    line-height: 1.8;
+    letter-spacing: -0.01em;
+}
+
+.message-text p {
+    margin: 0 0 1.5rem 0;
+}
+
+.message-text p:last-child {
+    margin-bottom: 0;
+}
+
+.message-text ul,
+.message-text ol {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.message-text li {
+    margin-bottom: 0.75rem;
+}
+
+.message-text li:last-child {
+    margin-bottom: 0;
+}
+
+/* User message - right-aligned */
+.message-user {
+    flex-direction: row-reverse;
+}
+
+.message-user .message-content {
+    text-align: right;
+}
+
+.message-user .message-text {
+    display: inline-block;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    border: 1px solid #333338;
+    max-width: 85%;
+}
+
+/* AI message - left-aligned */
+.message-ai {
+    flex-direction: row;
+}
+
+.message-timestamp {
+    font-size: 0.8125rem;
+    color: #6a6a78;
+    margin-top: 0.5rem;
+}
+
+/* ============================================================================
+   HEADINGS
+   ============================================================================ */
+
+.message-text h1,
+.message-text h2,
+.message-text h3,
+.message-text h4 {
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 2rem 0 1rem 0;
+}
+
+.message-text h1 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+}
+
+.message-text h2 {
+    font-size: 1.5rem;
+    line-height: 1.35;
+}
+
+.message-text h3 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+}
+
+.message-text h4 {
+    font-size: 1.0625rem;
+    line-height: 1.5;
+}
+
+/* ============================================================================
+   CODE BLOCKS
+   ============================================================================ */
+
+.message-text pre {
+    background: #1b1b1c;
+    border: 1px solid #333338;
+    border-radius: 12px;
+    padding: 0;
+    margin: 1.5rem 0;
+    overflow: hidden;
+}
+
+.message-text pre code {
+    display: block;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    font-family: "SF Mono", "Fira Code", "Consolas", "Monaco", monospace;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: #e0e0e0;
+}
+
+.message-text code:not(pre code) {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: "SF Mono", "Fira Code", "Consolas", "Monaco", monospace;
+    font-size: 0.875rem;
+    color: #f0f0f0;
+    border: 1px solid #333338;
+}
+
+/* ============================================================================
+   TABLES - SPACIOUS & CLEAN
+   ============================================================================ */
+
+.message-text table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.5rem 0;
+    border: 1px solid #333338;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.message-text th,
+.message-text td {
+    padding: 1.25rem 1.5rem; /* Spacious padding */
+    text-align: left;
+    border-bottom: 1px solid #333338;
+}
+
+.message-text th {
+    background: rgba(255, 255, 255, 0.03);
+    color: #a0a0a8;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.message-text td {
+    background: transparent;
+    color: #e0e0e0;
+}
+
+.message-text tr:last-child td {
+    border-bottom: none;
+}
+
+.message-text tr:hover td {
+    background: rgba(255, 255, 255, 0.02); /* Subtle hover */
+}
+
+/* ============================================================================
+   BLOCKQUOTE
+   ============================================================================ */
+
+.message-text blockquote {
+    border-left: 3px solid #444448;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 0 8px 8px 0;
+    color: #c0c0c8;
+}
+
+/* ============================================================================
+   HORIZONTAL RULE
+   ============================================================================ */
+
+.message-text hr {
+    border: none;
+    border-top: 1px solid #333338;
+    margin: 2rem 0;
+}
+
+/* ============================================================================
+   LINKS
+   ============================================================================ */
+
+.message-text a {
+    color: #7a9cff;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.message-text a:hover {
+    border-bottom-color: #7a9cff;
+}
+
+/* ============================================================================
+   INPUT BAR - FIXED AT BOTTOM, ELEVATED
+   ============================================================================ */
+
+.input-bar {
+    position: fixed;
+    bottom: 0;
+    left: 220px;
+    right: 0;
+    background: #272728;
+    border-top: 1px solid #333338;
+    padding: 1.5rem 2rem 2rem;
+    z-index: 200;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.input-bar-inner {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    background: #1b1b1c;
+    border: 1px solid #333338;
+    border-radius: 16px;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: #444448;
+    box-shadow: 0 0 0 2px rgba(68, 68, 72, 0.15);
+}
+
+.attach-btn {
+    background: transparent;
+    border: none;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: #a0a0a8;
+    border-radius: 8px;
+}
+
+.attach-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+}
+
+.attach-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.input-textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e0e0e0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    resize: none;
+    min-height: 24px;
+    max-height: 200px;
+    font-family: inherit;
+    padding: 0.5rem 0;
+}
+
+.input-textarea::placeholder {
+    color: #6a6a78;
+}
+
+.send-btn {
+    background: #ffffff;
+    color: #272728;
+    border: none;
+    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.send-btn:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+.send-btn:active {
+    transform: translateY(0);
+}
+
+.send-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.input-hint {
+    text-align: center;
+    font-size: 0.8125rem;
+    color: #6a6a78;
+    margin-top: 0.75rem;
+}
+
+/* ============================================================================
+   TYPING INDICATOR
+   ============================================================================ */
+
+.typing-indicator {
+    display: flex;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 0.375rem;
+    align-items: center;
+    padding: 0.75rem 0;
+}
+
+.typing-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #6a6a78;
+    animation: typingPulse 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+/* ============================================================================
+   EMPTY STATE
+   ============================================================================ */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    padding: 2rem;
+}
+
+.empty-state-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.5rem;
+    opacity: 0.3;
+}
+
+.empty-state-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+}
+
+.empty-state-text {
+    font-size: 0.9375rem;
+    color: #a0a0a8;
+    max-width: 400px;
+    line-height: 1.6;
+}
+
+/* ============================================================================
+   RESPONSIVE - MOBILE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .input-bar {
+        left: 0;
+        padding: 1rem;
+    }
+    
+    .message-list {
+        padding: 1.5rem 1rem 2rem;
+    }
+    
+    .chat-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .message-user .message-text {
+        max-width: 90%;
+    }
+    
+    .message-text table {
+        font-size: 0.875rem;
+    }
+    
+    .message-text th,
+    .message-text td {
+        padding: 1rem;
+    }
+}
+
+/* ============================================================================
+   SCROLLBAR STYLING
+   ============================================================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333338;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444448;
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.hidden {
+    display: none !important;
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+
+/* ============================================================================
+   DASHBOARD LAYOUT COMPONENTS
+   ============================================================================ */
+
+/* Dashboard Layout Container */
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #272728;
+    flex-direction: column;
+}
+
+/* Dashboard Topbar */
+.dashboard-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #1b1b1c;
+    border-bottom: 1px solid #333338;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    z-index: 1000;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.topbar-logo {
+    height: 32px;
+    width: auto;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.topbar-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.topbar-stat-label {
+    color: #a0a0a8;
+}
+
+.topbar-stat-value {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.topbar-stat-value.success {
+    color: #07d197;
+}
+
+.language-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.lang-btn {
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: 1px solid #333338;
+    border-radius: 6px;
+    color: #a0a0a8;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+}
+
+.lang-btn.active {
+    background: rgba(7, 209, 151, 0.1);
+    border-color: #07d197;
+    color: #07d197;
+}
+
+/* Dashboard Sidebar - Unified with Console Sidebar */
+.dashboard-sidebar {
+    position: fixed;
+    left: 0;
+    top: 60px;
+    width: 220px;
+    height: calc(100vh - 60px);
+    background: #1b1b1c;
+    border-right: 1px solid #333338;
+    padding: 2rem 1rem;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.dashboard-sidebar .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dashboard-sidebar .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.dashboard-sidebar .sidebar-nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+.dashboard-sidebar .sidebar-nav-item.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.dashboard-sidebar .sidebar-nav-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-sidebar .sidebar-nav-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: #ffffff;
+    stroke-width: 2;
+    fill: none;
+}
+
+.sidebar-section-title {
+    padding: 0 0.75rem;
+    margin: 2rem 0 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6a6a78;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: transparent;
+    border: 1px solid #333338;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #a0a0a8;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+}
+
+/* Dashboard Main Content */
+.dashboard-main {
+    margin-left: 220px;
+    margin-top: 60px;
+    padding: 2rem;
+    min-height: calc(100vh - 60px);
+}
+
+.main-header {
+    margin-bottom: 2rem;
+}
+
+.main-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.main-subtitle {
+    font-size: 0.9375rem;
+    color: #a0a0a8;
+    line-height: 1.6;
+}
+
+/* Dashboard Tabs */
+.dashboard-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #333338;
+    padding-bottom: 0;
+}
+
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #a0a0a8;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    bottom: -1px;
+}
+
+.tab-btn:hover {
+    color: #e0e0e0;
+}
+
+.tab-btn.active {
+    color: #ffffff;
+    border-bottom-color: #07d197;
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    background: #1b1b1c;
+    border: 1px solid #333338;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Loading & Error States */
+.loading-state,
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid #333338;
+    border-top-color: #07d197;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    margin-top: 1.5rem;
+    color: #a0a0a8;
+    font-size: 0.9375rem;
+}
+
+.error-card {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+}
+
+.error-card h2 {
+    color: #ff6b6b;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.error-card p {
+    color: #e0e0e0;
+    margin-bottom: 1.5rem;
+}
+
+/* CTA Buttons */
+.cta-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cta-button.primary {
+    background: #07d197;
+    color: #1a0b2e;
+}
+
+.cta-button.primary:hover {
+    background: #06c088;
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .dashboard-sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .dashboard-main {
+        margin-left: 0;
+        padding: 1.5rem;
+    }
+    
+    .dashboard-topbar {
+        padding: 0 1rem;
+    }
+}

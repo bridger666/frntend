@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test ARIA Agent Loading</title>
+    <style>
+        body {
+            font-family: 'Inter Tight', sans-serif;
+            background: #272728;
+            color: #ffffff;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-result {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 1px solid #333338;
+        }
+        .success {
+            background: rgba(7, 209, 151, 0.1);
+            border-color: #07d197;
+        }
+        .error {
+            background: rgba(255, 77, 77, 0.1);
+            border-color: #ff4d4d;
+        }
+        .info {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        pre {
+            background: #1b1b1c;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>ARIA Agent Loading Test</h1>
+    
+    <div id="results"></div>
+    
+    <script src="console-aria.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+        
+        // Test 1: Check if ARIAAgent is defined
+        addResult('<strong>Test 1:</strong> Checking if ARIAAgent class is defined...', 'info');
+        
+        if (typeof ARIAAgent !== 'undefined') {
+            addResult('✅ ARIAAgent class is defined', 'success');
+            
+            // Test 2: Try to create an instance
+            addResult('<strong>Test 2:</strong> Creating ARIAAgent instance...', 'info');
+            
+            try {
+                const agent = new ARIAAgent({
+                    tier: 'enterprise',
+                    userId: 'test_user',
+                    has_snapshot: false,
+                    has_blueprint: false,
+                    credits: 2000
+                });
+                
+                addResult('✅ ARIAAgent instance created successfully', 'success');
+                addResult(`<pre>${JSON.stringify(agent.config, null, 2)}</pre>`, 'info');
+                
+                // Test 3: Try to initialize
+                addResult('<strong>Test 3:</strong> Initializing ARIA agent...', 'info');
+                
+                agent.initialize().then(() => {
+                    addResult('✅ ARIA agent initialized successfully', 'success');
+                    addResult(`System prompt loaded: ${agent.systemPrompt ? 'Yes' : 'No (using fallback)'}`, 'info');
+                }).catch(error => {
+                    addResult(`⚠️ Initialization completed with warnings: ${error.message}`, 'info');
+                });
+                
+            } catch (error) {
+                addResult(`❌ Failed to create ARIAAgent instance: ${error.message}`, 'error');
+                addResult(`<pre>${error.stack}</pre>`, 'error');
+            }
+            
+        } else {
+            addResult('❌ ARIAAgent class is NOT defined', 'error');
+            addResult('This means console-aria.js did not load correctly', 'error');
+            
+            // Check if the file exists
+            addResult('<strong>Debugging:</strong> Checking if console-aria.js is accessible...', 'info');
+            
+            fetch('console-aria.js')
+                .then(response => {
+                    if (response.ok) {
+                        addResult('✅ console-aria.js file is accessible', 'success');
+                        return response.text();
+                    } else {
+                        addResult(`❌ console-aria.js returned status: ${response.status}`, 'error');
+                    }
+                })
+                .then(content => {
+                    if (content) {
+                        addResult(`File size: ${content.length} characters`, 'info');
+                        addResult('File contains ARIAAgent class: ' + (content.includes('class ARIAAgent') ? 'Yes' : 'No'), 'info');
+                    }
+                })
+                .catch(error => {
+                    addResult(`❌ Failed to fetch console-aria.js: ${error.message}`, 'error');
+                });
+        }
+        
+        // Test 4: Check window.ARIAAgent
+        addResult('<strong>Test 4:</strong> Checking window.ARIAAgent...', 'info');
+        if (window.ARIAAgent) {
+            addResult('✅ window.ARIAAgent is available', 'success');
+        } else {
+            addResult('❌ window.ARIAAgent is NOT available', 'error');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Test - Aivory</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0A0E27;
+            color: #E8E6E3;
+        }
+        .test-box {
+            background: #1A1F3A;
+            border: 1px solid #2A3F5F;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success {
+            border-left: 4px solid #00D9A3;
+        }
+        .error {
+            border-left: 4px solid #E74C3C;
+        }
+        h1 {
+            color: #00D9A3;
+        }
+        h2 {
+            color: #00D9A3;
+            font-size: 18px;
+            margin-top: 0;
+        }
+        code {
+            background: #0A0E27;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .status {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        button {
+            background: #00D9A3;
+            color: #0A0E27;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+        }
+        button:hover {
+            background: #00C090;
+        }
+        .secondary {
+            background: #2A3F5F;
+            color: #E8E6E3;
+        }
+        .secondary:hover {
+            background: #3A4F6F;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Aivory Cache Test</h1>
+    <p>This page tests if your browser cache has been cleared and the updated JavaScript files are loading.</p>
+
+    <div class="test-box" id="versionTest">
+        <h2>Test 1: Script Version Check</h2>
+        <p>Expected: All scripts should load with <code>v=7</code></p>
+        <div class="status" id="versionStatus">Testing...</div>
+        <div id="versionDetails"></div>
+    </div>
+
+    <div class="test-box" id="apiTest">
+        <h2>Test 2: API_BASE_URL Declaration</h2>
+        <p>Expected: No duplicate declaration errors</p>
+        <div class="status" id="apiStatus">Testing...</div>
+        <div id="apiDetails"></div>
+    </div>
+
+    <div class="test-box" id="functionTest">
+        <h2>Test 3: Function Availability</h2>
+        <p>Expected: <code>startFreeDiagnostic()</code> should be defined</p>
+        <div class="status" id="functionStatus">Testing...</div>
+        <div id="functionDetails"></div>
+    </div>
+
+    <div class="test-box" id="consoleTest">
+        <h2>Test 4: Console Errors</h2>
+        <p>Expected: No JavaScript errors in console</p>
+        <div class="status" id="consoleStatus">Check console manually</div>
+        <div id="consoleDetails">
+            <p>Open DevTools (F12) → Console tab and check for errors</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <button onclick="runTests()">Re-run Tests</button>
+        <button class="secondary" onclick="window.location.href='index.html'">Go to Homepage</button>
+        <button class="secondary" onclick="window.location.reload(true)">Hard Refresh</button>
+    </div>
+
+    <!-- Load the actual scripts to test -->
+    <script src="id-chain-manager.js?v=4"></script>
+    <script src="auth-manager.js?v=4"></script>
+    <script src="auth-modals.js?v=4"></script>
+    <script src="app.js?v=7"></script>
+
+    <script>
+        function runTests() {
+            // Test 1: Check script versions in Network tab
+            testScriptVersions();
+            
+            // Test 2: Check API_BASE_URL
+            testAPIBaseURL();
+            
+            // Test 3: Check function availability
+            testFunctions();
+        }
+
+        function testScriptVersions() {
+            const versionBox = document.getElementById('versionTest');
+            const versionStatus = document.getElementById('versionStatus');
+            const versionDetails = document.getElementById('versionDetails');
+            
+            // Check if scripts loaded
+            const scripts = document.querySelectorAll('script[src]');
+            let allCorrect = true;
+            let details = '<ul style="margin: 10px 0; padding-left: 20px;">';
+            
+            scripts.forEach(script => {
+                const src = script.getAttribute('src');
+                if (src && src.includes('.js')) {
+                    const hasVersion = src.includes('?v=');
+                    const version = hasVersion ? src.split('?v=')[1] : 'none';
+                    const expectedVersion = src.includes('auth') || src.includes('id-chain') ? '4' : '7';
+                    const isCorrect = version === expectedVersion;
+                    
+                    if (!isCorrect && hasVersion) allCorrect = false;
+                    
+                    details += `<li>${src} - ${isCorrect ? '✅' : '⚠️'}</li>`;
+                }
+            });
+            
+            details += '</ul>';
+            details += '<p><strong>Note:</strong> Open DevTools → Network tab → Refresh page to see actual loaded versions</p>';
+            
+            if (allCorrect) {
+                versionStatus.textContent = '✅ PASS';
+                versionStatus.style.color = '#00D9A3';
+                versionBox.classList.add('success');
+            } else {
+                versionStatus.textContent = '⚠️ CHECK NETWORK TAB';
+                versionStatus.style.color = '#FFA500';
+            }
+            
+            versionDetails.innerHTML = details;
+        }
+
+        function testAPIBaseURL() {
+            const apiBox = document.getElementById('apiTest');
+            const apiStatus = document.getElementById('apiStatus');
+            const apiDetails = document.getElementById('apiDetails');
+            
+            try {
+                // Check if window.API_BASE_URL exists
+                if (typeof window.API_BASE_URL !== 'undefined') {
+                    apiStatus.textContent = '✅ PASS';
+                    apiStatus.style.color = '#00D9A3';
+                    apiBox.classList.add('success');
+                    apiDetails.innerHTML = `<p>API_BASE_URL is defined: <code>${window.API_BASE_URL}</code></p>`;
+                } else {
+                    apiStatus.textContent = '❌ FAIL';
+                    apiStatus.style.color = '#E74C3C';
+                    apiBox.classList.add('error');
+                    apiDetails.innerHTML = '<p>API_BASE_URL is not defined. Scripts may not have loaded.</p>';
+                }
+            } catch (error) {
+                apiStatus.textContent = '❌ ERROR';
+                apiStatus.style.color = '#E74C3C';
+                apiBox.classList.add('error');
+                apiDetails.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        function testFunctions() {
+            const functionBox = document.getElementById('functionTest');
+            const functionStatus = document.getElementById('functionStatus');
+            const functionDetails = document.getElementById('functionDetails');
+            
+            const functionsToTest = [
+                'startFreeDiagnostic',
+                'showSection',
+                'startSnapshot',
+                'startBlueprint'
+            ];
+            
+            let allDefined = true;
+            let details = '<ul style="margin: 10px 0; padding-left: 20px;">';
+            
+            functionsToTest.forEach(funcName => {
+                const isDefined = typeof window[funcName] === 'function';
+                if (!isDefined) allDefined = false;
+                details += `<li><code>${funcName}()</code> - ${isDefined ? '✅ Defined' : '❌ Undefined'}</li>`;
+            });
+            
+            details += '</ul>';
+            
+            if (allDefined) {
+                functionStatus.textContent = '✅ PASS';
+                functionStatus.style.color = '#00D9A3';
+                functionBox.classList.add('success');
+            } else {
+                functionStatus.textContent = '❌ FAIL';
+                functionStatus.style.color = '#E74C3C';
+                functionBox.classList.add('error');
+                details += '<p><strong>This means app.js did not load correctly. Clear your browser cache completely.</strong></p>';
+            }
+            
+            functionDetails.innerHTML = details;
+        }
+
+        // Run tests on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runTests, 500); // Wait for scripts to load
+        });
+    </script>
+</body>
+</html>

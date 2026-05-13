@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Click Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #4020a5;
+            color: white;
+        }
+        .test-button {
+            padding: 1rem 2rem;
+            background: #0ae8af;
+            color: #3c229f;
+            border: none;
+            border-radius: 9999px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 1rem 0;
+            display: block;
+        }
+        .test-button:hover {
+            opacity: 0.9;
+        }
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Click Test</h1>
+    <p>Testing if buttons are clickable and JavaScript is working:</p>
+    
+    <h2>Test 1: Inline onclick</h2>
+    <button class="test-button" onclick="alert('Inline onclick works!')">Test Inline onclick</button>
+    
+    <h2>Test 2: Event Listener</h2>
+    <button class="test-button" id="eventListenerBtn">Test Event Listener</button>
+    
+    <h2>Test 3: startFreeDiagnostic function</h2>
+    <button class="test-button" onclick="testStartFreeDiagnostic()">Test startFreeDiagnostic</button>
+    
+    <div class="result" id="result"></div>
+    
+    <h2>Test 4: Load app.js and test</h2>
+    <button class="test-button" onclick="testWithAppJs()">Test with app.js loaded</button>
+    
+    <script>
+        // Test 2: Event Listener
+        document.getElementById('eventListenerBtn').addEventListener('click', function() {
+            alert('Event listener works!');
+        });
+        
+        // Test 3: Mock startFreeDiagnostic
+        function testStartFreeDiagnostic() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<strong>Testing startFreeDiagnostic...</strong><br>';
+            
+            if (typeof startFreeDiagnostic === 'function') {
+                result.innerHTML += '✅ startFreeDiagnostic function exists<br>';
+                try {
+                    startFreeDiagnostic();
+                    result.innerHTML += '✅ startFreeDiagnostic executed without error<br>';
+                } catch (e) {
+                    result.innerHTML += '❌ Error: ' + e.message + '<br>';
+                }
+            } else {
+                result.innerHTML += '❌ startFreeDiagnostic function NOT found<br>';
+                result.innerHTML += 'This means app.js is not loaded or the function is not defined.<br>';
+            }
+        }
+        
+        // Test 4: Load app.js
+        function testWithAppJs() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<strong>Loading app.js...</strong><br>';
+            
+            const script = document.createElement('script');
+            script.src = 'app.js';
+            script.onload = function() {
+                result.innerHTML += '✅ app.js loaded<br>';
+                testStartFreeDiagnostic();
+            };
+            script.onerror = function() {
+                result.innerHTML += '❌ Failed to load app.js<br>';
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Check on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<strong>Page Load Check:</strong><br>';
+            result.innerHTML += 'JavaScript is working: ✅<br>';
+            result.innerHTML += 'DOM is ready: ✅<br>';
+        });
+    </script>
+</body>
+</html>

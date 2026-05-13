@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Click Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-button {
+            padding: 15px 30px;
+            font-size: 16px;
+            background: #0ae8af;
+            color: #3c229f;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .test-button:hover {
+            opacity: 0.9;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Click Test</h1>
+    <p>Testing if buttons are clickable and JavaScript is working</p>
+    
+    <button class="test-button" onclick="testClick('Button 1')">Test Button 1 (inline onclick)</button>
+    <button class="test-button" id="test-btn-2">Test Button 2 (event listener)</button>
+    
+    <div id="output">
+        <p>Click a button to test...</p>
+    </div>
+    
+    <script>
+        console.log('✅ Script loaded');
+        
+        function testClick(buttonName) {
+            console.log('Button clicked:', buttonName);
+            document.getElementById('output').innerHTML = '<p>✅ ' + buttonName + ' clicked successfully!</p>';
+        }
+        
+        // Test event listener
+        document.getElementById('test-btn-2').addEventListener('click', function() {
+            testClick('Button 2');
+        });
+        
+        console.log('✅ Event listener attached');
+    </script>
+</body>
+</html>

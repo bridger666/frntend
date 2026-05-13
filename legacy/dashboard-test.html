@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Tier Testing</title>
+    <style>
+        body {
+            font-family: 'Inter Tight', sans-serif;
+            background: #4020a5;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 40px;
+        }
+        .tier-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .tier-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .tier-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        .tier-card h2 {
+            color: #07d197;
+            margin-bottom: 10px;
+        }
+        .tier-card p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+            <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        Aivory Progressive Dashboard - Tier Testing
+    </h1>
+    
+    <div class="tier-links">
+        <a href="dashboard-v2.html?tier=1" class="tier-card">
+            <h2>Tier 1: Free</h2>
+            <p>Basic diagnostic results with lite readiness score</p>
+        </a>
+        
+        <a href="dashboard-v2.html?tier=2" class="tier-card">
+            <h2>Tier 2: Snapshot</h2>
+            <p>AI-powered strategic analysis with weighted scoring</p>
+        </a>
+        
+        <a href="dashboard-v2.html?tier=3" class="tier-card">
+            <h2>Tier 3: Blueprint</h2>
+            <p>Complete system architecture with deployment plan</p>
+        </a>
+        
+        <a href="dashboard-v2.html?tier=4" class="tier-card">
+            <h2>Tier 4: Operator</h2>
+            <p>Live AI COO dashboard with execution monitoring</p>
+        </a>
+    </div>
+    
+    <div style="margin-top: 60px; opacity: 0.7; font-size: 14px;">
+        <p>Click any tier to see the progressive dashboard in action</p>
+        <p>Each tier unlocks more features while maintaining a single codebase</p>
+    </div>
+</body>
+</html>

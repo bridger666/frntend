@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Chain Test - Aivory</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #fff;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+        }
+        .section {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .section h2 {
+            color: #00ff00;
+            margin-top: 0;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #00cc00;
+        }
+        button.danger {
+            background: #ff0000;
+            color: #fff;
+        }
+        button.danger:hover {
+            background: #cc0000;
+        }
+        .output {
+            background: #000;
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            color: #00ff00;
+        }
+        .error {
+            color: #ff0000;
+        }
+        .info {
+            color: #00ccff;
+        }
+        input {
+            background: #111;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px;
+            margin: 5px 0;
+            width: 300px;
+            font-family: 'Courier New', monospace;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔗 ID Chain Test Suite</h1>
+    <p>Test the complete data handoff pipeline: Diagnostic → Snapshot → Blueprint</p>
+
+    <!-- Super Admin Mode -->
+    <div class="section">
+        <h2>🔧 Super Admin Mode</h2>
+        <p>Load test IDs from latest backend test run</p>
+        <button onclick="loadSuperAdminMode()">Load Test IDs</button>
+        <button onclick="window.location.href='?superadmin=GrandMasterRCH'">Enable Super Admin URL</button>
+        <div id="superadmin-output" class="output"></div>
+    </div>
+
+    <!-- Current ID Chain -->
+    <div class="section">
+        <h2>📊 Current ID Chain</h2>
+        <button onclick="displayIdChain()">Refresh Display</button>
+        <button class="danger" onclick="clearAllIds()">Clear All IDs</button>
+        <div id="chain-output" class="output"></div>
+    </div>
+
+    <!-- Test Diagnostic -->
+    <div class="section">
+        <h2>1️⃣ Test Diagnostic Submission</h2>
+        <label>Email:</label>
+        <input type="email" id="test-email" value="test@aivory.id" />
+        <label>Company:</label>
+        <input type="text" id="test-company" value="Aivory Test Corp" />
+        <label>Industry:</label>
+        <input type="text" id="test-industry" value="Technology" />
+        <br><br>
+        <button onclick="testDiagnostic()">Submit Test Diagnostic</button>
+        <div id="diagnostic-output" class="output"></div>
+    </div>
+
+    <!-- Test Snapshot -->
+    <div class="section">
+        <h2>2️⃣ Test Snapshot Submission</h2>
+        <p>Requires diagnostic_id from Step 1</p>
+        <button onclick="testSnapshot()">Submit Test Snapshot</button>
+        <div id="snapshot-output" class="output"></div>
+    </div>
+
+    <!-- Test Blueprint -->
+    <div class="section">
+        <h2>3️⃣ Test Blueprint Generation</h2>
+        <p>Requires snapshot_id from Step 2</p>
+        <button onclick="testBlueprint()">Generate Test Blueprint</button>
+        <div id="blueprint-output" class="output"></div>
+    </div>
+
+    <!-- End-to-End Test -->
+    <div class="section">
+        <h2>🚀 End-to-End Test</h2>
+        <p>Run complete flow: Diagnostic → Snapshot → Blueprint</p>
+        <button onclick="runE2ETest()">Run Complete Flow</button>
+        <div id="e2e-output" class="output"></div>
+    </div>
+
+    <script src="id-chain-manager.js"></script>
+    <script>
+        const API_BASE_URL = 'http://localhost:8081';
+
+        // Display current ID chain
+        function displayIdChain() {
+            const chain = IDChainManager.getIdChain();
+            const output = document.getElementById('chain-output');
+            
+            output.innerHTML = `
+<span class="info">🔗 ID CHAIN:</span>
+
+<span class="${chain.diagnostic_id ? 'success' : 'error'}">diagnostic_id: ${chain.diagnostic_id || '(not set)'}</span>
+     ↓
+<span class="${chain.snapshot_id ? 'success' : 'error'}">snapshot_id: ${chain.snapshot_id || '(not set)'}</span>
+     ↓
+<span class="${chain.blueprint_id ? 'success' : 'error'}">blueprint_id: ${chain.blueprint_id || '(not set)'}</span>
+
+<span class="info">User Context:</span>
+${JSON.stringify(chain.user_context, null, 2)}
+            `;
+        }
+
+        // Clear all IDs
+        function clearAllIds() {
+            if (confirm('Clear all IDs and start fresh?')) {
+                IDChainManager.clearAllIds();
+                displayIdChain();
+                alert('✓ All IDs cleared');
+            }
+        }
+
+        // Load super admin mode
+        function loadSuperAdminMode() {
+            const output = document.getElementById('superadmin-output');
+            output.innerHTML = '<span class="info">Loading test IDs...</span>';
+            
+            IDChainManager.loadTestIds();
+            
+            output.innerHTML = `
+<span class="success">✓ Test IDs loaded:</span>
+  diagnostic_id: diag_t3n4myidyorn
+  snapshot_id: snap_uk5fttxhm23k
+  user_email: test@aivory.id
+  company_name: Aivory Test Corp
+  industry: Technology
+            `;
+            
+            displayIdChain();
+        }
+
+        // Test diagnostic submission
+        async function testDiagnostic() {
+            const output = document.getElementById('diagnostic-output');
+            output.innerHTML = '<span class="info">Submitting diagnostic...</span>';
+            
+            try {
+                // Generate 12 test answers
+                const answers = Array.from({length: 12}, (_, i) => ({
+                    question_id: `q${i}`,
+                    selected_option: i % 4
+                }));
+                
+                const userEmail = document.getElementById('test-email').value;
+                const companyName = document.getElementById('test-company').value;
+                const industry = document.getElementById('test-industry').value;
+                
+                const response = await fetch(`${API_BASE_URL}/api/v1/diagnostic/run`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        answers,
+                        user_email: userEmail,
+                        company_name: companyName,
+                        industry: industry
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Store diagnostic ID
+                IDChainManager.storeDiagnosticData(result.diagnostic_id, {
+                    user_email: userEmail,
+                    company_name: companyName,
+                    industry: industry
+                });
+                
+                output.innerHTML = `
+<span class="success">✓ Diagnostic submitted successfully!</span>
+
+diagnostic_id: ${result.diagnostic_id}
+score: ${result.score}
+category: ${result.category}
+
+<span class="info">User Context stored:</span>
+  email: ${userEmail}
+  company: ${companyName}
+  industry: ${industry}
+                `;
+                
+                displayIdChain();
+                
+            } catch (error) {
+                output.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+            }
+        }
+
+        // Test snapshot submission
+        async function testSnapshot() {
+            const output = document.getElementById('snapshot-output');
+            
+            const diagnosticId = IDChainManager.getDiagnosticId();
+            if (!diagnosticId) {
+                output.innerHTML = '<span class="error">✗ No diagnostic_id found. Run Step 1 first.</span>';
+                return;
+            }
+            
+            output.innerHTML = '<span class="info">Submitting snapshot...</span>';
+            
+            try {
+                // Generate 30 test answers
+                const answers = Array.from({length: 30}, (_, i) => ({
+                    question_id: `snap_q${i}`,
+                    selected_option: i % 5
+                }));
+                
+                const userContext = IDChainManager.getUserContext();
+                
+                const response = await fetch(`${API_BASE_URL}/api/v1/diagnostic/snapshot`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        snapshot_answers: answers,
+                        diagnostic_id: diagnosticId,
+                        user_email: userContext.user_email,
+                        company_name: userContext.company_name,
+                        industry: userContext.industry,
+                        language: 'en'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Store snapshot ID
+                IDChainManager.storeSnapshotId(result.snapshot_id);
+                
+                output.innerHTML = `
+<span class="success">✓ Snapshot submitted successfully!</span>
+
+snapshot_id: ${result.snapshot_id}
+diagnostic_id: ${result.diagnostic_id}
+readiness_score: ${result.readiness_score}
+readiness_level: ${result.readiness_level}
+
+<span class="info">User Context inherited from diagnostic</span>
+                `;
+                
+                displayIdChain();
+                
+            } catch (error) {
+                output.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+            }
+        }
+
+        // Test blueprint generation
+        async function testBlueprint() {
+            const output = document.getElementById('blueprint-output');
+            
+            const snapshotId = IDChainManager.getSnapshotId();
+            if (!snapshotId) {
+                output.innerHTML = '<span class="error">✗ No snapshot_id found. Run Step 2 first.</span>';
+                return;
+            }
+            
+            output.innerHTML = '<span class="info">Generating blueprint...</span>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/v1/blueprint/generate`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_id: 'GrandMasterRCH',
+                        snapshot_id: snapshotId,
+                        bypass_payment: true
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Store blueprint ID
+                    IDChainManager.storeBlueprintId(result.blueprint_id);
+                    
+                    output.innerHTML = `
+<span class="success">✓ Blueprint generated successfully!</span>
+
+blueprint_id: ${result.blueprint_id}
+json_url: ${result.json_url}
+pdf_url: ${result.pdf_url}
+
+<span class="info">Complete ID chain established!</span>
+                    `;
+                } else {
+                    output.innerHTML = `<span class="error">✗ Blueprint generation failed: ${result.message}</span>`;
+                }
+                
+                displayIdChain();
+                
+            } catch (error) {
+                output.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+            }
+        }
+
+        // Run end-to-end test
+        async function runE2ETest() {
+            const output = document.getElementById('e2e-output');
+            output.innerHTML = '<span class="info">Running end-to-end test...</span>\n\n';
+            
+            try {
+                // Step 1: Diagnostic
+                output.innerHTML += '<span class="info">Step 1: Submitting diagnostic...</span>\n';
+                await testDiagnostic();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 2: Snapshot
+                output.innerHTML += '<span class="info">Step 2: Submitting snapshot...</span>\n';
+                await testSnapshot();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 3: Blueprint
+                output.innerHTML += '<span class="info">Step 3: Generating blueprint...</span>\n';
+                await testBlueprint();
+                
+                output.innerHTML += '\n<span class="success">✓ End-to-end test complete!</span>\n';
+                output.innerHTML += '\nCheck the "Current ID Chain" section above to see all IDs.';
+                
+            } catch (error) {
+                output.innerHTML += `\n<span class="error">✗ E2E test failed: ${error.message}</span>`;
+            }
+        }
+
+        // Initialize
+        displayIdChain();
+        
+        // Show ID chain display
+        IDChainManager.showIdChainDisplay();
+    </script>
+</body>
+</html>

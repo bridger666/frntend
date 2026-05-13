@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Debug Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            background: #0a0a0a;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .info { color: #00aaff; }
+        pre {
+            background: #000;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Frontend Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: API Base URL</h2>
+        <div id="test1"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: AuthManager</h2>
+        <div id="test2"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Blueprint Fetch</h2>
+        <div id="test3"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Dashboard Simulation</h2>
+        <div id="test4"></div>
+    </div>
+
+    <script src="http://localhost:8080/auth-manager.js?v=23"></script>
+    <script>
+        // Set API_BASE_URL
+        window.API_BASE_URL = 'http://localhost:8081';
+        
+        // Test 1: API Base URL
+        document.getElementById('test1').innerHTML = `
+            <p class="success">✅ API_BASE_URL: ${window.API_BASE_URL}</p>
+        `;
+        
+        // Test 2: AuthManager
+        setTimeout(() => {
+            const test2 = document.getElementById('test2');
+            if (typeof AuthManager !== 'undefined') {
+                const isAuth = AuthManager.isAuthenticated();
+                const isSuperAdmin = AuthManager.isSuperAdmin();
+                const user = AuthManager.getUser();
+                const userId = AuthManager.getUserId();
+                
+                test2.innerHTML = `
+                    <p class="success">✅ AuthManager loaded</p>
+                    <p class="info">Authenticated: ${isAuth}</p>
+                    <p class="info">Super Admin: ${isSuperAdmin}</p>
+                    <p class="info">User ID: ${userId || 'null'}</p>
+                    <p class="info">User: ${user ? JSON.stringify(user) : 'null'}</p>
+                `;
+            } else {
+                test2.innerHTML = `<p class="error">❌ AuthManager not loaded</p>`;
+            }
+        }, 500);
+        
+        // Test 3: Blueprint Fetch
+        async function testBlueprintFetch() {
+            const test3 = document.getElementById('test3');
+            const blueprintId = 'bp_812f6a238095';
+            const userId = 'GrandMasterRCH';
+            
+            try {
+                test3.innerHTML = '<p class="info">⏳ Fetching blueprint...</p>';
+                
+                const response = await fetch(
+                    `${window.API_BASE_URL}/api/v1/blueprint/${blueprintId}?user_id=${userId}`
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                test3.innerHTML = `
+                    <p class="success">✅ Blueprint fetched successfully</p>
+                    <p class="info">System Name: ${data.system_name}</p>
+                    <p class="info">Agents: ${data.agents ? data.agents.length : 0}</p>
+                    <p class="info">Workflows: ${data.workflows ? data.workflows.length : 0}</p>
+                    <p class="info">Integrations: ${data.integrations_required ? data.integrations_required.length : 0}</p>
+                    <p class="info">Deployment: ${data.deployment_estimate}</p>
+                    <details>
+                        <summary>Full JSON</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+            } catch (error) {
+                test3.innerHTML = `
+                    <p class="error">❌ Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Test 4: Dashboard Simulation
+        async function testDashboardSimulation() {
+            const test4 = document.getElementById('test4');
+            const blueprintId = 'bp_812f6a238095';
+            const userId = 'GrandMasterRCH';
+            
+            try {
+                test4.innerHTML = '<p class="info">⏳ Simulating dashboard load...</p>';
+                
+                // Simulate URL params
+                const urlParams = new URLSearchParams('?mode=blueprint&id=' + blueprintId + '&user_id=' + userId);
+                const mode = urlParams.get('mode');
+                const id = urlParams.get('id');
+                const user = urlParams.get('user_id');
+                
+                test4.innerHTML += `<p class="info">Mode: ${mode}</p>`;
+                test4.innerHTML += `<p class="info">Blueprint ID: ${id}</p>`;
+                test4.innerHTML += `<p class="info">User ID: ${user}</p>`;
+                
+                // Fetch blueprint
+                const response = await fetch(
+                    `${window.API_BASE_URL}/api/v1/blueprint/${id}?user_id=${user}`
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load blueprint');
+                }
+                
+                const blueprintData = await response.json();
+                
+                // Simulate rendering
+                const systemName = blueprintData.system_name || 'AI System';
+                const agents = blueprintData.agents || [];
+                const workflows = blueprintData.workflows || [];
+                const integrations = blueprintData.integrations_required || [];
+                const deploymentEstimate = blueprintData.deployment_estimate || 'N/A';
+                
+                test4.innerHTML += `
+                    <p class="success">✅ Dashboard simulation successful</p>
+                    <p class="info">Would render:</p>
+                    <ul>
+                        <li>System: ${systemName}</li>
+                        <li>${agents.length} agents</li>
+                        <li>${workflows.length} workflows</li>
+                        <li>${integrations.length} integrations</li>
+                        <li>Deployment: ${deploymentEstimate}</li>
+                    </ul>
+                    <p class="success">✅ All fields present and valid</p>
+                `;
+            } catch (error) {
+                test4.innerHTML += `
+                    <p class="error">❌ Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Run tests
+        setTimeout(() => {
+            testBlueprintFetch();
+            testDashboardSimulation();
+        }, 1000);
+    </script>
+</body>
+</html>

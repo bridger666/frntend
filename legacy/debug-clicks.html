@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Clicks - Aivory</title>
+    <link rel="stylesheet" href="design-system.css">
+    <link rel="stylesheet" href="styles.css?v=26">
+    <style>
+        /* Debug overlay to show clickable areas */
+        .debug-overlay {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #0ae8af;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 10000;
+            max-width: 300px;
+        }
+        .debug-overlay h3 {
+            margin: 0 0 0.5rem 0;
+            color: white;
+        }
+        .debug-log {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+        }
+        .debug-log div {
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .success { color: #0ae8af; }
+        .error { color: #ff4444; }
+    </style>
+</head>
+<body>
+    <!-- Debug Overlay -->
+    <div class="debug-overlay">
+        <h3>🔍 Click Debug</h3>
+        <div>Canvas pointer-events: <span id="canvas-pe">checking...</span></div>
+        <div>Button exists: <span id="button-exists">checking...</span></div>
+        <div>Function exists: <span id="func-exists">checking...</span></div>
+        <div>app.js loaded: <span id="appjs-loaded">checking...</span></div>
+        <div class="debug-log" id="debug-log"></div>
+    </div>
+
+    <!-- Section 1: Homepage -->
+    <section id="homepage" class="section active">
+        <div class="hero">
+            <!-- LED Background Canvas -->
+            <canvas id="led-hero-bg"></canvas>
+            
+            <div class="hero-tagline">Make AI make sense</div>
+            <h1 class="hero-title">Test Button Clickability</h1>
+            <p class="hero-subline">Debugging the Start Free Diagnostic button</p>
+            
+            <div class="hero-cta-group">
+                <button class="cta-button primary" id="test-button" onclick="startFreeDiagnostic()">Start free diagnostic</button>
+                <button class="secondary-button" onclick="logDebug('Secondary button clicked')">Test Secondary Button</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="led-hero-background.js" defer></script>
+    <script src="app.js?v=26"></script>
+    <script>
+        function logDebug(message, isError = false) {
+            const log = document.getElementById('debug-log');
+            const div = document.createElement('div');
+            div.className = isError ? 'error' : 'success';
+            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            log.insertBefore(div, log.firstChild);
+        }
+
+        // Check everything on load
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check canvas pointer-events
+            const canvas = document.getElementById('led-hero-bg');
+            if (canvas) {
+                const style = window.getComputedStyle(canvas);
+                document.getElementById('canvas-pe').textContent = style.pointerEvents;
+                document.getElementById('canvas-pe').className = style.pointerEvents === 'none' ? 'success' : 'error';
+            }
+
+            // Check button exists
+            const button = document.getElementById('test-button');
+            document.getElementById('button-exists').textContent = button ? 'YES ✅' : 'NO ❌';
+            document.getElementById('button-exists').className = button ? 'success' : 'error';
+
+            // Check function exists
+            setTimeout(() => {
+                const funcExists = typeof startFreeDiagnostic === 'function';
+                document.getElementById('func-exists').textContent = funcExists ? 'YES ✅' : 'NO ❌';
+                document.getElementById('func-exists').className = funcExists ? 'success' : 'error';
+                
+                if (!funcExists) {
+                    logDebug('startFreeDiagnostic function NOT found!', true);
+                }
+            }, 100);
+
+            // Check app.js loaded
+            const scripts = Array.from(document.scripts);
+            const appJsLoaded = scripts.some(s => s.src.includes('app.js'));
+            document.getElementById('appjs-loaded').textContent = appJsLoaded ? 'YES ✅' : 'NO ❌';
+            document.getElementById('appjs-loaded').className = appJsLoaded ? 'success' : 'error';
+
+            // Add click listener to button
+            if (button) {
+                button.addEventListener('click', function(e) {
+                    logDebug('Button clicked! Event: ' + e.type);
+                    logDebug('Target: ' + e.target.tagName + '.' + e.target.className);
+                });
+            }
+
+            // Log all clicks on the page
+            document.addEventListener('click', function(e) {
+                logDebug('Click detected at: ' + e.clientX + ',' + e.clientY);
+            });
+
+            logDebug('Debug script loaded');
+        });
+
+        // Override startFreeDiagnostic to log
+        const originalStart = window.startFreeDiagnostic;
+        window.startFreeDiagnostic = function() {
+            logDebug('startFreeDiagnostic called!');
+            if (originalStart) {
+                originalStart();
+            } else {
+                logDebug('Original function not found', true);
+            }
+        };
+    </script>
+</body>
+</html>

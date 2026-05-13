@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console Layout Test - Aivory</title>
+    <link rel="stylesheet" href="console-layout-refactor.css?v=1">
+    <style>
+        /* Minimal base styles for testing */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Button styles for test */
+        .btn-clear, .btn-system {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: rgba(15, 23, 42, 0.8);
+            color: rgba(226, 232, 240, 0.9);
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-clear:hover, .btn-system:hover {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+        
+        /* Sidebar nav styles */
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-nav-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: rgba(148, 163, 184, 0.8);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: all 0.15s ease;
+        }
+        
+        .sidebar-nav-item:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: rgba(56, 189, 248, 0.95);
+        }
+        
+        .sidebar-nav-item.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: rgba(56, 189, 248, 1);
+        }
+        
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(148, 163, 184, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 20px 0 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="console-layout">
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-nav-item active">
+                    <span>💬</span>
+                    <span>Console</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>📊</span>
+                    <span>Overview</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>⚡</span>
+                    <span>Workflows</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>📝</span>
+                    <span>Logs</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-section-title">SETTINGS</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-nav-item">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>🏠</span>
+                    <span>Home</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Console Area -->
+        <div class="console-main dashboard-main">
+            <div class="console-container">
+                <div class="console-panels">
+                    <div class="console-thread">
+                        <!-- Thread Header -->
+                        <div class="thread-header">
+                            <h2>AI Console</h2>
+                            <div class="header-actions">
+                                <button class="btn-clear">Clear History</button>
+                                <button class="btn-system">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3"/>
+                                    </svg>
+                                    System
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Thread Messages -->
+                        <div class="thread-messages" id="threadMessages">
+                            <!-- AI Welcome Message -->
+                            <div class="ai-message">
+                                <div class="message-bubble">
+                                    <div class="message-avatar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16v-4m0-4h.01"/>
+                                        </svg>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-text">
+                                            <p>Welcome to Aivory AI Console.</p>
+                                            <p>I can help you with three things:</p>
+                                            <ol>
+                                                <li>Identify your automation gaps (Free Diagnostic — 5 min)</li>
+                                                <li>Map your full AI system architecture (AI Snapshot, $15)</li>
+                                                <li>Get a deployment-ready blueprint for your business (AI Blueprint, $79)</li>
+                                            </ol>
+                                            <p>What does your business currently struggle to automate?</p>
+                                        </div>
+                                        <div class="message-timestamp">Just now</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- User Message -->
+                            <div class="user-message">
+                                <div class="message-bubble">
+                                    <div class="message-avatar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                            <circle cx="12" cy="7" r="4"/>
+                                        </svg>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-text">
+                                            <p>I need help automating our customer support workflow. We get hundreds of emails daily and our team is overwhelmed.</p>
+                                        </div>
+                                        <div class="message-timestamp">12:34 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Response with Code -->
+                            <div class="ai-message">
+                                <div class="message-bubble">
+                                    <div class="message-avatar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16v-4m0-4h.01"/>
+                                        </svg>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-text">
+                                            <p>I can help you build an automated customer support system. Here's a sample workflow structure:</p>
+                                            <pre data-language="json"><code>{
+  "workflow": "customer_support_automation",
+  "trigger": "email_received",
+  "steps": [
+    {
+      "action": "classify_email",
+      "model": "gpt-4",
+      "categories": ["urgent", "faq", "sales", "support"]
+    },
+    {
+      "action": "route_to_agent",
+      "condition": "category == 'urgent'"
+    },
+    {
+      "action": "auto_respond",
+      "condition": "category == 'faq'"
+    }
+  ]
+}</code></pre>
+                                            <h3>Key Benefits</h3>
+                                            <ul>
+                                                <li>Reduce response time by 80%</li>
+                                                <li>Handle 10x more inquiries</li>
+                                                <li>Free up your team for complex issues</li>
+                                            </ul>
+                                            <p>Would you like me to create a detailed blueprint for your specific use case?</p>
+                                        </div>
+                                        <div class="message-timestamp">12:35 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Response with Table -->
+                            <div class="ai-message">
+                                <div class="message-bubble">
+                                    <div class="message-avatar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16v-4m0-4h.01"/>
+                                        </svg>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-text">
+                                            <p>Here's a comparison of automation tiers:</p>
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tier</th>
+                                                        <th>Features</th>
+                                                        <th>Price</th>
+                                                        <th>Best For</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Foundation</td>
+                                                        <td>Basic workflows, 50 credits</td>
+                                                        <td>$15/mo</td>
+                                                        <td>Small teams</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Operator</td>
+                                                        <td>Advanced workflows, 300 credits</td>
+                                                        <td>$79/mo</td>
+                                                        <td>Growing businesses</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Enterprise</td>
+                                                        <td>Custom solutions, 2000 credits</td>
+                                                        <td>Custom</td>
+                                                        <td>Large organizations</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <p>Which tier matches your needs?</p>
+                                        </div>
+                                        <div class="message-timestamp">12:36 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Add more messages to test scrolling -->
+                            <div class="user-message">
+                                <div class="message-bubble">
+                                    <div class="message-avatar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                            <circle cx="12" cy="7" r="4"/>
+                                        </svg>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-text">
+                                            <p>The Operator tier looks perfect. Can you show me how to integrate with our existing CRM?</p>
+                                        </div>
+                                        <div class="message-timestamp">12:37 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="ai-message">
+                                <div class="message-bubble">
+                                    <div class="message-avatar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16v-4m0-4h.01"/>
+                                        </svg>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-text">
+                                            <p>Absolutely! Here's how to integrate with popular CRM systems:</p>
+                                            <h3>Salesforce Integration</h3>
+                                            <pre data-language="bash"><code>curl -X POST https://api.aivory.com/v1/integrations/salesforce \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "instance_url": "https://your-instance.salesforce.com",
+    "client_id": "YOUR_CLIENT_ID",
+    "client_secret": "YOUR_CLIENT_SECRET"
+  }'</code></pre>
+                                            <h3>HubSpot Integration</h3>
+                                            <pre data-language="javascript"><code>const aivory = require('@aivory/sdk');
+
+aivory.integrations.connect({
+  provider: 'hubspot',
+  apiKey: process.env.HUBSPOT_API_KEY,
+  portalId: 'YOUR_PORTAL_ID'
+});
+
+// Sync contacts automatically
+aivory.workflows.create({
+  trigger: 'contact_created',
+  actions: ['enrich_data', 'send_welcome_email']
+});</code></pre>
+                                            <blockquote>
+                                                <strong>Pro Tip:</strong> Use webhooks for real-time sync instead of polling to reduce API costs by 90%.
+                                            </blockquote>
+                                            <p>Need help with a specific CRM? Let me know!</p>
+                                        </div>
+                                        <div class="message-timestamp">12:38 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Typing Indicator (hidden by default) -->
+                        <div class="typing-indicator" style="display: none;">
+                            <div class="typing-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 16v-4m0-4h.01"/>
+                                </svg>
+                            </div>
+                            <div class="typing-grid-container">
+                                <div class="typing-grid">
+                                    <div class="typing-grid-dot"></div>
+                                    <div class="typing-grid-dot"></div>
+                                    <div class="typing-grid-dot"></div>
+                                    <div class="typing-grid-dot"></div>
+                                    <div class="typing-grid-dot"></div>
+                                    <div class="typing-grid-dot"></div>
+                                    <div class="typing-grid-dot"></div>
+                                    <div class="typing-grid-dot"></div>
+                                    <div class="typing-grid-dot"></div>
+                                </div>
+                                <div class="typing-status">Thinking...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Wrapper - Sticky at Bottom -->
+                <div class="chat-input-wrapper">
+                    <div class="chat-input-bar">
+                        <textarea
+                            class="chat-textarea"
+                            placeholder="Ask me anything about workflows, logs, or AI systems..."
+                            rows="1"
+                        ></textarea>
+                        
+                        <div class="chat-input-actions">
+                            <div class="actions-left">
+                                <div class="attach-menu-wrapper">
+                                    <button class="attach-btn" title="Add">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                            <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="actions-right">
+                                <button class="send-btn">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="input-hint">Press Enter to send, Shift+Enter for new line</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test auto-scroll on button click
+        document.querySelector('.send-btn').addEventListener('click', () => {
+            const messagesContainer = document.getElementById('threadMessages');
+            const newMessage = document.createElement('div');
+            newMessage.className = 'user-message';
+            newMessage.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">
+                            <p>This is a test message to verify auto-scroll behavior!</p>
+                        </div>
+                        <div class="message-timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(newMessage);
+            
+            // Scroll page to bottom
+            requestAnimationFrame(() => {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Clear textarea
+            document.querySelector('.chat-textarea').value = '';
+        });
+        
+        // Auto-resize textarea
+        const textarea = document.querySelector('.chat-textarea');
+        textarea.addEventListener('input', () => {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 180) + 'px';
+        });
+        
+        // Enter to send
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.querySelector('.send-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>

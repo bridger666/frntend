@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test - Aivory</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body style="background: #20202b; padding: 2rem;">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <h1 style="color: white; text-align: center; margin-bottom: 2rem;">Authentication Test</h1>
+        
+        <!-- Login Form -->
+        <div class="dashboard-card">
+            <h2>Login</h2>
+            <form id="loginForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label for="username" style="display: block; margin-bottom: 0.5rem; color: #fff;">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        value="GrandMasterRCH"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; border-radius: 8px;"
+                    />
+                </div>
+                <div>
+                    <label for="password" style="display: block; margin-bottom: 0.5rem; color: #fff;">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        value="Lemonandsalt66633"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; border-radius: 8px;"
+                    />
+                </div>
+                <button type="submit" class="cta-button primary">Login</button>
+            </form>
+            <div id="loginResult" style="margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none;"></div>
+        </div>
+
+        <!-- Session Info -->
+        <div class="dashboard-card">
+            <h2>Session Info</h2>
+            <button onclick="checkSession()" class="cta-button secondary" style="width: 100%; margin-bottom: 1rem;">Check Session</button>
+            <div id="sessionResult" style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px; color: #fff; font-family: monospace; font-size: 0.875rem; white-space: pre-wrap;"></div>
+        </div>
+
+        <!-- Logout -->
+        <div class="dashboard-card">
+            <h2>Logout</h2>
+            <button onclick="handleLogout()" class="cta-button secondary" style="width: 100%;">Logout</button>
+        </div>
+
+        <!-- Test Dashboard Access -->
+        <div class="dashboard-card">
+            <h2>Test Dashboard Access</h2>
+            <a href="dashboard.html" class="cta-button primary" style="display: block; text-align: center; text-decoration: none;">Go to Dashboard</a>
+        </div>
+    </div>
+
+    <script src="auth-guard.js"></script>
+    <script>
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            const result = await login(username, password);
+            
+            resultDiv.style.display = 'block';
+            if (result.success) {
+                resultDiv.style.background = 'rgba(7, 209, 151, 0.2)';
+                resultDiv.style.border = '1px solid #07d197';
+                resultDiv.style.color = '#07d197';
+                resultDiv.innerHTML = `
+                    <strong>✓ Login Successful</strong><br>
+                    Username: ${result.username}<br>
+                    Tier: ${result.tier}<br>
+                    Role: ${result.role}<br>
+                    Token: ${result.session_token.substring(0, 20)}...
+                `;
+            } else {
+                resultDiv.style.background = 'rgba(255, 68, 68, 0.2)';
+                resultDiv.style.border = '1px solid #ff4444';
+                resultDiv.style.color = '#ff4444';
+                resultDiv.innerHTML = `<strong>✗ Login Failed</strong><br>${result.message}`;
+            }
+        });
+
+        // Check session
+        async function checkSession() {
+            const resultDiv = document.getElementById('sessionResult');
+            const isValid = await validateSession();
+            
+            if (isValid) {
+                const userData = getUserData();
+                resultDiv.textContent = JSON.stringify({
+                    valid: true,
+                    token: getSessionToken().substring(0, 20) + '...',
+                    ...userData
+                }, null, 2);
+                resultDiv.style.color = '#07d197';
+            } else {
+                resultDiv.textContent = JSON.stringify({
+                    valid: false,
+                    message: 'No valid session'
+                }, null, 2);
+                resultDiv.style.color = '#ff4444';
+            }
+        }
+
+        // Logout handler
+        async function handleLogout() {
+            await logout();
+            document.getElementById('loginResult').style.display = 'none';
+            document.getElementById('sessionResult').textContent = 'Logged out';
+            document.getElementById('sessionResult').style.color = '#fff';
+        }
+
+        // Check session on load
+        window.addEventListener('load', checkSession);
+    </script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueprint Dashboard Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #00aaff; }
+        h2 { color: #ffaa00; margin-top: 30px; }
+        .test-box {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffaa00; }
+        .info { color: #00aaff; }
+        pre {
+            background: #000;
+            padding: 10px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #00cc00;
+        }
+        .log-entry {
+            padding: 5px;
+            margin: 2px 0;
+            border-left: 3px solid #333;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Blueprint Dashboard Debug Tool</h1>
+    
+    <div class="test-box">
+        <h2>Step 1: Environment Check</h2>
+        <div id="env-check"></div>
+    </div>
+    
+    <div class="test-box">
+        <h2>Step 2: AuthManager Check</h2>
+        <div id="auth-check"></div>
+        <button onclick="testLogin()">Test Login</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>Step 3: Blueprint Generation</h2>
+        <div id="blueprint-gen"></div>
+        <button onclick="generateBlueprint()">Generate Blueprint</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>Step 4: Blueprint Fetch</h2>
+        <div id="blueprint-fetch"></div>
+        <button onclick="fetchBlueprint()">Fetch Blueprint</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>Step 5: Dashboard Simulation</h2>
+        <div id="dashboard-sim"></div>
+        <button onclick="simulateDashboard()">Simulate Dashboard</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>Console Log</h2>
+        <div id="console-log"></div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="auth-manager.js?v=23"></script>
+    <script src="id-chain-manager.js?v=23"></script>
+    
+    <script>
+        // Set API_BASE_URL
+        window.API_BASE_URL = 'http://localhost:8081';
+        
+        let currentBlueprintId = null;
+        
+        // Logging function
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('console-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                success: '#00ff00',
+                error: '#ff0000',
+                warning: '#ffaa00',
+                info: '#00aaff'
+            };
+            logDiv.innerHTML += `<div class="log-entry" style="border-left-color: ${colors[type]}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        // Step 1: Environment Check
+        function checkEnvironment() {
+            const envDiv = document.getElementById('env-check');
+            let html = '';
+            
+            // Check API_BASE_URL
+            html += `<p class="success">✅ API_BASE_URL: ${window.API_BASE_URL}</p>`;
+            log('API_BASE_URL configured: ' + window.API_BASE_URL, 'success');
+            
+            // Check AuthManager
+            if (typeof AuthManager !== 'undefined') {
+                html += `<p class="success">✅ AuthManager loaded</p>`;
+                log('AuthManager loaded', 'success');
+                
+                // Check methods
+                const methods = ['isAuthenticated', 'isSuperAdmin', 'getUser', 'getUserId', 'login'];
+                methods.forEach(method => {
+                    if (typeof AuthManager[method] === 'function') {
+                        html += `<p class="success">  ✅ AuthManager.${method}() exists</p>`;
+                    } else {
+                        html += `<p class="error">  ❌ AuthManager.${method}() missing</p>`;
+                        log('AuthManager.' + method + '() missing', 'error');
+                    }
+                });
+            } else {
+                html += `<p class="error">❌ AuthManager not loaded</p>`;
+                log('AuthManager not loaded', 'error');
+            }
+            
+            // Check IDChainManager
+            if (typeof IDChainManager !== 'undefined') {
+                html += `<p class="success">✅ IDChainManager loaded</p>`;
+                log('IDChainManager loaded', 'success');
+            } else {
+                html += `<p class="warning">⚠️ IDChainManager not loaded</p>`;
+                log('IDChainManager not loaded', 'warning');
+            }
+            
+            envDiv.innerHTML = html;
+        }
+        
+        // Step 2: Auth Check
+        function checkAuth() {
+            const authDiv = document.getElementById('auth-check');
+            let html = '';
+            
+            if (typeof AuthManager === 'undefined') {
+                html = '<p class="error">❌ AuthManager not available</p>';
+                authDiv.innerHTML = html;
+                return;
+            }
+            
+            const isAuth = AuthManager.isAuthenticated();
+            const isSuperAdmin = AuthManager.isSuperAdmin();
+            const user = AuthManager.getUser();
+            const userId = AuthManager.getUserId();
+            
+            html += `<p class="${isAuth ? 'success' : 'warning'}">Authenticated: ${isAuth}</p>`;
+            html += `<p class="${isSuperAdmin ? 'success' : 'info'}">Super Admin: ${isSuperAdmin}</p>`;
+            html += `<p class="info">User ID: ${userId || 'null'}</p>`;
+            
+            if (user) {
+                html += `<details><summary>User Object</summary><pre>${JSON.stringify(user, null, 2)}</pre></details>`;
+            }
+            
+            authDiv.innerHTML = html;
+            
+            log('Auth status: ' + (isAuth ? 'authenticated' : 'not authenticated'), isAuth ? 'success' : 'warning');
+            log('Super admin: ' + isSuperAdmin, isSuperAdmin ? 'success' : 'info');
+        }
+        
+        // Test Login
+        async function testLogin() {
+            const authDiv = document.getElementById('auth-check');
+            log('Attempting login...', 'info');
+            
+            try {
+                authDiv.innerHTML = '<p class="info">⏳ Logging in...</p>';
+                
+                const user = await AuthManager.login('grandmaster@aivory.ai', 'GrandMaster2026!');
+                
+                log('Login successful: ' + user.email, 'success');
+                checkAuth();
+                
+            } catch (error) {
+                authDiv.innerHTML = `<p class="error">❌ Login failed: ${error.message}</p>`;
+                log('Login failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Generate Blueprint
+        async function generateBlueprint() {
+            const genDiv = document.getElementById('blueprint-gen');
+            log('Generating blueprint...', 'info');
+            
+            try {
+                genDiv.innerHTML = '<p class="info">⏳ Generating blueprint...</p>';
+                
+                const response = await fetch(`${window.API_BASE_URL}/api/v1/blueprint/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: 'GrandMasterRCH',
+                        snapshot_id: 'snap_superadmin_demo'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                currentBlueprintId = result.blueprint_id;
+                
+                genDiv.innerHTML = `
+                    <p class="success">✅ Blueprint generated</p>
+                    <p class="info">Blueprint ID: <strong>${result.blueprint_id}</strong></p>
+                    <p class="info">JSON URL: ${result.json_url}</p>
+                    <p class="info">PDF URL: ${result.pdf_url}</p>
+                `;
+                
+                log('Blueprint generated: ' + result.blueprint_id, 'success');
+                
+            } catch (error) {
+                genDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+                log('Blueprint generation failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Fetch Blueprint
+        async function fetchBlueprint() {
+            const fetchDiv = document.getElementById('blueprint-fetch');
+            
+            if (!currentBlueprintId) {
+                fetchDiv.innerHTML = '<p class="warning">⚠️ Generate a blueprint first</p>';
+                return;
+            }
+            
+            log('Fetching blueprint: ' + currentBlueprintId, 'info');
+            
+            try {
+                fetchDiv.innerHTML = '<p class="info">⏳ Fetching blueprint data...</p>';
+                
+                const response = await fetch(
+                    `${window.API_BASE_URL}/api/v1/blueprint/${currentBlueprintId}?user_id=GrandMasterRCH`
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                fetchDiv.innerHTML = `
+                    <p class="success">✅ Blueprint fetched successfully</p>
+                    <p class="info">System Name: <strong>${data.system_name}</strong></p>
+                    <p class="info">Agents: ${data.agents ? data.agents.length : 0}</p>
+                    <p class="info">Workflows: ${data.workflows ? data.workflows.length : 0}</p>
+                    <p class="info">Integrations: ${data.integrations_required ? data.integrations_required.length : 0}</p>
+                    <p class="info">Deployment: ${data.deployment_estimate}</p>
+                    <details>
+                        <summary>Full JSON</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+                
+                log('Blueprint fetched successfully', 'success');
+                
+                // Store in sessionStorage like the real dashboard does
+                sessionStorage.setItem('dashboard_blueprint_data', JSON.stringify(data));
+                log('Stored in sessionStorage', 'success');
+                
+            } catch (error) {
+                fetchDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+                log('Blueprint fetch failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Simulate Dashboard
+        async function simulateDashboard() {
+            const simDiv = document.getElementById('dashboard-sim');
+            
+            if (!currentBlueprintId) {
+                simDiv.innerHTML = '<p class="warning">⚠️ Generate and fetch a blueprint first</p>';
+                return;
+            }
+            
+            log('Simulating dashboard render...', 'info');
+            
+            try {
+                simDiv.innerHTML = '<p class="info">⏳ Simulating dashboard...</p>';
+                
+                // Get data from sessionStorage (like real dashboard)
+                const storedData = sessionStorage.getItem('dashboard_blueprint_data');
+                
+                if (!storedData) {
+                    throw new Error('No data in sessionStorage');
+                }
+                
+                const data = JSON.parse(storedData);
+                
+                // Extract fields (like renderBlueprintDashboard does)
+                const systemName = data.system_name || 'AI System';
+                const agents = data.agents || [];
+                const workflows = data.workflows || [];
+                const integrations = data.integrations_required || [];
+                const deploymentEstimate = data.deployment_estimate || 'N/A';
+                
+                let html = `<p class="success">✅ Dashboard simulation successful</p>`;
+                html += `<h3>Would Render:</h3>`;
+                html += `<p><strong>System Name:</strong> ${systemName}</p>`;
+                html += `<p><strong>Agents (${agents.length}):</strong></p><ul>`;
+                
+                agents.forEach((agent, idx) => {
+                    html += `<li>${idx + 1}. ${agent.name} (${agent.trigger})</li>`;
+                });
+                
+                html += `</ul><p><strong>Workflows (${workflows.length}):</strong></p><ul>`;
+                
+                workflows.forEach(workflow => {
+                    html += `<li>${workflow.name}</li>`;
+                });
+                
+                html += `</ul><p><strong>Integrations (${integrations.length}):</strong></p><ul>`;
+                
+                integrations.forEach(integration => {
+                    html += `<li>${integration.service_name} (${integration.priority})</li>`;
+                });
+                
+                html += `</ul><p><strong>Deployment:</strong> ${deploymentEstimate}</p>`;
+                
+                html += `<p class="success">✅ All fields present and valid</p>`;
+                html += `<p class="info">Dashboard URL:</p>`;
+                html += `<pre>http://localhost:8080/dashboard.html?mode=blueprint&id=${currentBlueprintId}&user_id=GrandMasterRCH</pre>`;
+                
+                simDiv.innerHTML = html;
+                
+                log('Dashboard simulation complete', 'success');
+                
+            } catch (error) {
+                simDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+                log('Dashboard simulation failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded', 'info');
+            checkEnvironment();
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

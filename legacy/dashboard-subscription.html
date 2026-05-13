@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIVORY - Subscription Dashboard</title>
+    <link rel="stylesheet" href="dashboard-subscription.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="stat-card">
+            <div class="stat-label">Plan</div>
+            <div class="stat-value" id="plan-name">Builder</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Intelligence Credits</div>
+            <div class="stat-value">
+                <span id="credits-balance">50</span> / <span id="credits-limit">50</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Executions</div>
+            <div class="stat-value">
+                <span id="executions-used">0</span> / <span id="executions-limit">2,500</span>
+            </div>
+        </div>
+        <div class="stat-card" id="sla-indicator" style="display: none;">
+            <div class="stat-label">SLA Status</div>
+            <div class="stat-value stat-success">Active</div>
+        </div>
+    </div>
+
+    <!-- Workspace Selector (Enterprise Only) -->
+    <div id="workspace-selector" class="workspace-selector" style="display: none;">
+        <label>Workspace:</label>
+        <select id="workspace-select">
+            <option value="sales">Sales</option>
+            <option value="ops">Ops</option>
+            <option value="engineering">AI Engineering</option>
+        </select>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="dashboard-grid">
+        <!-- Row 1 Left: Workflow List -->
+        <div class="dashboard-card" id="workflow-list-card">
+            <h3>Workflows <span class="limit-indicator" id="workflow-limit">0 / 3</span></h3>
+            <div id="workflow-list"></div>
+            <button class="add-workflow-btn" id="add-workflow-btn" disabled>+ Add Workflow</button>
+        </div>
+
+        <!-- Row 1 Right: Workflow Visualization -->
+        <div class="dashboard-card" id="workflow-viz-card">
+            <h3>Workflow Preview</h3>
+            <div id="workflow-visualization"></div>
+        </div>
+
+        <!-- Row 2 Left: Execution Logs -->
+        <div class="dashboard-card" id="execution-logs-card">
+            <h3>Execution Logs</h3>
+            <div class="log-filters" id="log-filters" style="display: none;">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="errors">Errors</button>
+                <button class="filter-btn" data-filter="agentic">Agentic</button>
+            </div>
+            <div id="execution-logs"></div>
+        </div>
+
+        <!-- Row 2 Right: AI Decision Insight Panel -->
+        <div class="dashboard-card" id="ai-insight-card">
+            <h3 id="insight-title">Diagnostic Summary</h3>
+            <div id="ai-insight-content"></div>
+        </div>
+    </div>
+
+    <script src="dashboard-subscription.js"></script>
+</body>
+</html>

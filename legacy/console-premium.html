@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--
+  DEPRECATED: This file is no longer maintained.
+  Use console.html instead (canonical console implementation).
+  This standalone file was created for testing the premium design
+  and has been merged into the main console.html.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Console - Aivory</title>
+    <link rel="stylesheet" href="console-premium.css">
+    <!-- Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+    <!-- Main Chat Container -->
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Aivory</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-nav-item active">
+                    <span class="sidebar-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </span>
+                    <span>Console</span>
+                </a>
+                
+                <a href="dashboard.html" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                    </span>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="workflows.html" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                    </span>
+                    <span>Workflows</span>
+                </a>
+                
+                <a href="logs.html" class="sidebar-nav-item">
+                    <span class="sidebar-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </span>
+                    <span>Logs</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="chat-header">
+                <div class="header-content">
+                    <h1 class="header-title">AI Console</h1>
+                    <div class="header-actions">
+                        <button class="header-btn" onclick="clearConversation()">Clear</button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Message List -->
+            <div class="message-list" id="messageList">
+                <div class="message-list-inner" id="messageListInner">
+                    <!-- Empty state (shown when no messages) -->
+                    <div class="empty-state" id="emptyState">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <h2 class="empty-state-title">Start a conversation</h2>
+                        <p class="empty-state-text">Ask me anything about your workflows, logs, or AI systems.</p>
+                    </div>
+                    
+                    <!-- Messages will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Input Bar (Fixed at bottom) -->
+            <div class="input-bar">
+                <div class="input-bar-inner">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="chatInput" 
+                            class="input-textarea" 
+                            placeholder="Ask anything..."
+                            rows="1"
+                        ></textarea>
+                        <button class="send-btn" id="sendBtn" aria-label="Send message">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="input-hint">Press Enter to send, Shift+Enter for new line</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="console-premium.js"></script>
+</body>
+</html>

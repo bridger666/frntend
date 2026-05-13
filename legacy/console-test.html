@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Console Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #1a0b2e; color: white; }
+        #output { margin-top: 20px; padding: 10px; background: #2a1b3e; border-radius: 8px; }
+        input { padding: 10px; width: 300px; }
+        button { padding: 10px 20px; background: #3c229f; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Console Test Page</h1>
+    <p>This tests if JavaScript is working:</p>
+    
+    <input type="text" id="testInput" placeholder="Type something..." />
+    <button onclick="testSend()">Send Test</button>
+    
+    <div id="output"></div>
+    
+    <script>
+        console.log('✅ JavaScript is loaded');
+        
+        function testSend() {
+            const input = document.getElementById('testInput');
+            const output = document.getElementById('output');
+            const message = input.value;
+            
+            console.log('Send clicked, message:', message);
+            
+            output.innerHTML += `<p>You sent: ${message}</p>`;
+            input.value = '';
+        }
+        
+        // Test if console.js is the issue
+        console.log('Testing fetch to backend...');
+        fetch('http://localhost:8081/health')
+            .then(r => r.json())
+            .then(data => {
+                console.log('✅ Backend is reachable:', data);
+                document.getElementById('output').innerHTML = '<p>✅ Backend connected: ' + JSON.stringify(data) + '</p>';
+            })
+            .catch(err => {
+                console.error('❌ Backend error:', err);
+                document.getElementById('output').innerHTML = '<p>❌ Backend not reachable: ' + err.message + '</p>';
+            });
+    </script>
+</body>
+</html>

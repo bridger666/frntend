@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug User State - Aivory</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 30px; margin-bottom: 15px; font-size: 20px; }
+        .status {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px 10px 0;
+        }
+        button:hover { background: #2980b9; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        .check { color: #27ae60; font-weight: bold; }
+        .cross { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔍 User State Debugger</h1>
+        <p>This page shows exactly what the dashboard sees</p>
+        
+        <button onclick="runDiagnostics()">Run Full Diagnostics</button>
+        <button onclick="location.reload()">Refresh Page</button>
+        
+        <div id="results"></div>
+    </div>
+    
+    <script src="app.js"></script>
+    <script src="auth-manager.js"></script>
+    <script src="user-state-manager.js"></script>
+    
+    <script>
+        async function runDiagnostics() {
+            const resultsDiv = document.getElementById('results');
+            let html = '';
+            
+            // 1. Check Authentication
+            html += '<h2>1. Authentication Status</h2>';
+            const isAuth = AuthManager.isAuthenticated();
+            const user = AuthManager.getUser();
+            const token = AuthManager.getAccessToken();
+            
+            html += `<table>
+                <tr><th>Check</th><th>Status</th><th>Value</th></tr>
+                <tr>
+                    <td>Is Authenticated</td>
+                    <td>${isAuth ? '<span class="check">✓</span>' : '<span class="cross">✗</span>'}</td>
+                    <td>${isAuth}</td>
+                </tr>
+                <tr>
+                    <td>Has Access Token</td>
+                    <td>${token ? '<span class="check">✓</span>' : '<span class="cross">✗</span>'}</td>
+                    <td>${token ? token.substring(0, 30) + '...' : 'None'}</td>
+                </tr>
+                <tr>
+                    <td>User Email</td>
+                    <td>${user?.email ? '<span class="check">✓</span>' : '<span class="cross">✗</span>'}</td>
+                    <td>${user?.email || 'None'}</td>
+                </tr>
+                <tr>
+                    <td>User ID</td>
+                    <td>${user?.user_id ? '<span class="check">✓</span>' : '<span class="cross">✗</span>'}</td>
+                    <td>${user?.user_id || 'None'}</td>
+                </tr>
+                <tr>
+                    <td>Account Type</td>
+                    <td>${user?.account_type ? '<span class="check">✓</span>' : '<span class="cross">✗</span>'}</td>
+                    <td>${user?.account_type || 'None'}</td>
+                </tr>
+            </table>`;
+            
+            // 2. Test /api/v1/auth/me endpoint
+            html += '<h2>2. Backend API Test (/api/v1/auth/me)</h2>';
+            
+            if (!isAuth) {
+                html += '<div class="status error">Cannot test - not authenticated</div>';
+            } else {
+                try {
+                    const response = await fetch(`${window.API_BASE_URL}/api/v1/auth/me`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        html += `<div class="status error">API Error: HTTP ${response.status}</div>`;
+                        const errorText = await response.text();
+                        html += `<pre>${errorText}</pre>`;
+                    } else {
+                        const data = await response.json();
+                        html += '<div class="status success">✓ API Response Received</div>';
+                        html += `<table>
+                            <tr><th>Field</th><th>Value</th></tr>
+                            <tr><td>user_id</td><td>${data.user_id || 'MISSING'}</td></tr>
+                            <tr><td>email</td><td>${data.email || 'MISSING'}</td></tr>
+                            <tr><td>account_type</td><td>${data.account_type || 'MISSING'}</td></tr>
+                            <tr><td>tier</td><td>${data.tier || 'MISSING'}</td></tr>
+                            <tr><td>is_subscribed</td><td>${data.is_subscribed !== undefined ? data.is_subscribed : 'MISSING'}</td></tr>
+                            <tr><td>has_diagnostic</td><td>${data.has_diagnostic !== undefined ? data.has_diagnostic : 'MISSING'}</td></tr>
+                            <tr><td>has_snapshot</td><td>${data.has_snapshot !== undefined ? data.has_snapshot : 'MISSING'}</td></tr>
+                            <tr><td>has_blueprint</td><td>${data.has_blueprint !== undefined ? data.has_blueprint : 'MISSING'}</td></tr>
+                            <tr><td>credits</td><td>${data.credits !== undefined ? data.credits : 'MISSING'}</td></tr>
+                            <tr><td>credits_max</td><td>${data.credits_max !== undefined ? data.credits_max : 'MISSING'}</td></tr>
+                        </table>`;
+                        html += '<h3>Full Response:</h3>';
+                        html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    }
+                } catch (error) {
+                    html += `<div class="status error">API Error: ${error.message}</div>`;
+                }
+            }
+            
+            // 3. Check UserStateManager
+            html += '<h2>3. UserStateManager State</h2>';
+            const state = UserStateManager.getUserState();
+            
+            html += `<table>
+                <tr><th>Property</th><th>Value</th><th>Expected for GrandMaster</th></tr>
+                <tr><td>isLoaded</td><td>${state.isLoaded}</td><td>true</td></tr>
+                <tr><td>userId</td><td>${state.userId || 'null'}</td><td>GrandMasterRCH</td></tr>
+                <tr><td>email</td><td>${state.email || 'null'}</td><td>grandmaster@aivory.ai</td></tr>
+                <tr><td>tier</td><td>${state.tier}</td><td>enterprise</td></tr>
+                <tr><td>isSubscribed</td><td>${state.isSubscribed}</td><td>true</td></tr>
+                <tr><td>hasDiagnostic</td><td>${state.hasDiagnostic}</td><td>true</td></tr>
+                <tr><td>hasSnapshot</td><td>${state.hasSnapshot}</td><td>true</td></tr>
+                <tr><td>hasBlueprint</td><td>${state.hasBlueprint}</td><td>true</td></tr>
+                <tr><td>credits</td><td>${state.credits}</td><td>2000</td></tr>
+                <tr><td>creditsMax</td><td>${state.creditsMax}</td><td>2000</td></tr>
+            </table>`;
+            
+            // 4. Demo Mode Check
+            html += '<h2>4. Demo Mode Logic</h2>';
+            const isDemoMode = !state.hasSnapshot && !state.hasBlueprint && !state.hasDiagnostic && !state.isSubscribed;
+            html += `<div class="status ${isDemoMode ? 'error' : 'success'}">
+                Demo Mode: ${isDemoMode ? 'TRUE (WRONG!)' : 'FALSE (CORRECT)'}
+            </div>`;
+            html += `<p>Formula: !hasSnapshot && !hasBlueprint && !hasDiagnostic && !isSubscribed</p>`;
+            html += `<p>Calculation: !${state.hasSnapshot} && !${state.hasBlueprint} && !${state.hasDiagnostic} && !${state.isSubscribed} = ${isDemoMode}</p>`;
+            
+            // 5. Recommendations
+            html += '<h2>5. Diagnosis</h2>';
+            if (!isAuth) {
+                html += '<div class="status error">❌ Not authenticated - please login first</div>';
+            } else if (isDemoMode) {
+                html += '<div class="status error">❌ Demo mode is active because UserStateManager has all flags as false</div>';
+                html += '<p><strong>Possible causes:</strong></p>';
+                html += '<ul>';
+                html += '<li>Backend /api/v1/auth/me is not returning enriched fields</li>';
+                html += '<li>UserStateManager failed to load (check console for errors)</li>';
+                html += '<li>Browser cache is serving old JavaScript</li>';
+                html += '</ul>';
+                html += '<p><strong>Solutions:</strong></p>';
+                html += '<ul>';
+                html += '<li>Hard refresh: Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows)</li>';
+                html += '<li>Check backend is running: curl http://localhost:8081/health</li>';
+                html += '<li>Check browser console for errors</li>';
+                html += '</ul>';
+            } else {
+                html += '<div class="status success">✓ Everything looks correct!</div>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            setTimeout(runDiagnostics, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+/* ============================================================================
+   AIVORY PROGRESSIVE DASHBOARD - DESIGN SYSTEM
+   ============================================================================ */
+
+/* Design System Variables */
+:root {
+    /* Brand Colors */
+    --color-primary-purple: #4020a5;
+    --color-button-purple: #3c229f;
+    --color-mint-green: #07d197;
+    --color-white: #ffffff;
+    
+    /* Neutral Colors */
+    --color-bg-dark: #4020a5;
+    --color-bg-card: rgba(255, 255, 255, 0.04);
+    --color-bg-card-hover: rgba(255, 255, 255, 0.07);
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-text-primary: rgba(255, 255, 255, 0.95);
+    --color-text-secondary: rgba(255, 255, 255, 0.7);
+    
+    /* Typography */
+    --font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    
+    /* Spacing Scale (8px base) */
+    --spacing-1: 8px;
+    --spacing-2: 16px;
+    --spacing-3: 24px;
+    --spacing-4: 32px;
+    --spacing-5: 40px;
+    --spacing-6: 48px;
+    --spacing-8: 64px;
+    
+    /* Border Radius */
+    --radius-button: 9999px;
+    --radius-card: 12px;
+    --radius-small: 8px;
+}
+
+/* ============================================================================
+   GLOBAL STYLES
+   ============================================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    font-weight: var(--font-weight-light);
+    background: var(--color-bg-dark);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================================
+   DASHBOARD NAVIGATION
+   ============================================================================ */
+
+.dashboard-navbar {
+    background: var(--color-primary-purple);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.dashboard-nav-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: var(--spacing-2) var(--spacing-3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-logo img {
+    height: 32px;
+    display: block;
+}
+
+.dashboard-nav-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.tier-badge {
+    padding: var(--spacing-1) var(--spacing-2);
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-white);
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-button);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================================
+   DASHBOARD LAYOUT
+   ============================================================================ */
+
+.dashboard-layout {
+    display: flex;
+    min-height: calc(100vh - 64px);
+}
+
+.dashboard-sidebar {
+    width: 240px;
+    background: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid var(--color-border);
+    padding: var(--spacing-3) 0;
+}
+
+.dashboard-main {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-4) var(--spacing-3);
+}
+
+/* ============================================================================
+   SIDEBAR NAVIGATION
+   ============================================================================ */
+
+.nav-items {
+    list-style: none;
+}
+
+.nav-item {
+    margin-bottom: var(--spacing-1);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: var(--font-weight-normal);
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-white);
+}
+
+.nav-link.active {
+    background: rgba(7, 209, 151, 0.1);
+    color: var(--color-mint-green);
+    border-right: 2px solid var(--color-mint-green);
+}
+
+.nav-icon {
+    font-size: 18px;
+}
+
+/* ============================================================================
+   LOADING & ERROR STATES
+   ============================================================================ */
+
+.loading-state,
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--color-mint-green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top: var(--spacing-2);
+    color: var(--color-text-secondary);
+    font-size: 16px;
+}
+
+.error-card {
+    background: var(--color-bg-card);
+    padding: var(--spacing-5);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border);
+    text-align: center;
+    max-width: 500px;
+}
+
+.error-card h2 {
+    font-size: 24px;
+    font-weight: var(--font-weight-normal);
+    margin-bottom: var(--spacing-2);
+}
+
+.error-card p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-3);
+}
+
+/* ============================================================================
+   DASHBOARD CARDS
+   ============================================================================ */
+
+.dashboard-card {
+    background: var(--color-bg-card);
+    padding: var(--spacing-3);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border);
+    margin-bottom: var(--spacing-3);
+}
+
+.dashboard-card h2 {
+    font-size: 24px;
+    font-weight: var(--font-weight-normal);
+    margin-bottom: var(--spacing-2);
+}
+
+.dashboard-card h3 {
+    font-size: 18px;
+    font-weight: var(--font-weight-normal);
+    margin-bottom: var(--spacing-2);
+}
+
+.dashboard-card p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* ============================================================================
+   METRIC CARDS
+   ============================================================================ */
+
+.metric-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+}
+
+.metric-card {
+    background: var(--color-bg-card);
+    padding: var(--spacing-3);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border);
+}
+
+.metric-label {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-1);
+}
+
+.metric-value {
+    font-size: 40px;
+    font-weight: var(--font-weight-light);
+    color: var(--color-mint-green);
+    line-height: 1;
+}
+
+.metric-sublabel {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-1);
+}
+
+/* ============================================================================
+   PROGRESS BARS
+   ============================================================================ */
+
+.progress-bar-container {
+    margin: var(--spacing-2) 0;
+}
+
+.progress-bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-1);
+    font-size: 14px;
+    color: var(--color-text-secondary);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-button);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-mint-green);
+    border-radius: var(--radius-button);
+    transition: width 0.5s ease;
+}
+
+/* ============================================================================
+   BUTTONS
+   ============================================================================ */
+
+.cta-button {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-family: var(--font-family);
+    font-size: 16px;
+    font-weight: var(--font-weight-medium);
+    border: none;
+    border-radius: var(--radius-button);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.cta-button.primary {
+    background: var(--color-button-purple);
+    color: var(--color-white);
+}
+
+.cta-button.primary:hover {
+    background: var(--color-mint-green);
+    color: var(--color-button-purple);
+}
+
+.cta-button.secondary {
+    background: transparent;
+    color: var(--color-mint-green);
+    border: 1px solid var(--color-mint-green);
+}
+
+.cta-button.secondary:hover {
+    background: var(--color-mint-green);
+    color: var(--color-button-purple);
+}
+
+/* ============================================================================
+   GRID LAYOUTS
+   ============================================================================ */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-3);
+}
+
+/* ============================================================================
+   LISTS
+   ============================================================================ */
+
+.dashboard-list {
+    list-style: none;
+}
+
+.dashboard-list li {
+    padding: var(--spacing-2);
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid var(--color-mint-green);
+    margin-bottom: var(--spacing-1);
+    border-radius: var(--radius-small);
+}
+
+/* ============================================================================
+   UPGRADE CARD
+   ============================================================================ */
+
+.upgrade-card {
+    background: linear-gradient(135deg, var(--color-button-purple) 0%, var(--color-primary-purple) 100%);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-card);
+    border: 2px solid var(--color-mint-green);
+    text-align: center;
+    margin: var(--spacing-3) 0;
+}
+
+.upgrade-card h3 {
+    font-size: 24px;
+    font-weight: var(--font-weight-normal);
+    margin-bottom: var(--spacing-2);
+}
+
+.upgrade-price {
+    font-size: 40px;
+    font-weight: var(--font-weight-light);
+    color: var(--color-mint-green);
+    margin-bottom: var(--spacing-2);
+}
+
+/* ============================================================================
+   TABLES
+   ============================================================================ */
+
+.systems-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.systems-table th,
+.systems-table td {
+    padding: var(--spacing-2);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.systems-table th {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
+
+.systems-table td {
+    font-size: 14px;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: var(--spacing-1);
+}
+
+.status-dot.active {
+    background: var(--color-mint-green);
+}
+
+.status-dot.idle {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.status-dot.error {
+    background: #ff4444;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+    .dashboard-sidebar {
+        width: 200px;
+    }
+    
+    .metric-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-sidebar {
+        position: fixed;
+        left: -240px;
+        top: 64px;
+        height: calc(100vh - 64px);
+        z-index: 999;
+        transition: left 0.3s ease;
+    }
+    
+    .dashboard-sidebar.open {
+        left: 0;
+    }
+    
+    .dashboard-main {
+        width: 100%;
+    }
+    
+    .metric-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-2 {
+    margin-bottom: var(--spacing-2);
+}
+
+.mb-3 {
+    margin-bottom: var(--spacing-3);
+}
+
+.mt-2 {
+    margin-top: var(--spacing-2);
+}
+
+.mt-3 {
+    margin-top: var(--spacing-3);
+}

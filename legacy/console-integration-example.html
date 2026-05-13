@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Console - Aivory (Redesigned)</title>
+    
+    <!-- Design System & Layout (UNCHANGED) -->
+    <link rel="stylesheet" href="design-system.css">
+    <link rel="stylesheet" href="dashboard-layout.css?v=3">
+    
+    <!-- NEW: ChatGPT-style Console CSS -->
+    <link rel="stylesheet" href="console-redesign.css?v=4">
+    
+    <!-- Markdown & Syntax Highlighting (UNCHANGED) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+    <!-- Dashboard Layout (UNCHANGED) -->
+    <div class="dashboard-layout">
+        <!-- Top Bar (UNCHANGED) -->
+        <div class="dashboard-topbar">
+            <div class="topbar-left">
+                <img src="aivory_logo.png" alt="Aivory" class="topbar-logo" onclick="window.location.href='dashboard.html'" style="cursor: pointer;">
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-stat">
+                    <span class="topbar-stat-label">Tier:</span>
+                    <span class="topbar-stat-value" id="tierBadgeTop">Operator</span>
+                </div>
+                <div class="topbar-stat">
+                    <span class="topbar-stat-label">Credits:</span>
+                    <span class="topbar-stat-value success" id="creditsDisplay">50</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar (UNCHANGED) -->
+        <div class="dashboard-sidebar">
+            <nav class="sidebar-nav">
+                <a href="console.html" class="sidebar-nav-item active">
+                    <span class="sidebar-nav-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </span>
+                    <span>Console</span>
+                </a>
+                <!-- Other nav items... -->
+            </nav>
+            
+            <button class="sidebar-toggle" aria-label="Toggle sidebar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Console Area (REDESIGNED) -->
+        <div class="dashboard-main">
+            <div class="console-container">
+                <div class="console-panels">
+                    <!-- LEFT: Chat Thread (REDESIGNED) -->
+                    <div class="console-thread">
+                        <div class="thread-header">
+                            <h2>AI Console</h2>
+                            <button class="btn-clear" onclick="clearConversation()">Clear History</button>
+                        </div>
+                        
+                        <div class="thread-messages" id="threadMessages">
+                            <!-- Messages will be added here dynamically -->
+                            <!-- Welcome message -->
+                            <div class="message-bubble ai-message">
+                                <div class="message-avatar">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <line x1="12" y1="2" x2="12" y2="9"/>
+                                        <line x1="12" y1="15" x2="12" y2="22"/>
+                                        <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/>
+                                        <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/>
+                                        <line x1="2" y1="12" x2="9" y2="12"/>
+                                        <line x1="15" y1="12" x2="22" y2="12"/>
+                                        <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/>
+                                        <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/>
+                                    </svg>
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-text">
+                                        <div class="message-text-content">
+                                            <p>Welcome to AIVORY AI Console. I can help you with:</p>
+                                            <ul>
+                                                <li>Generate workflows from natural language</li>
+                                                <li>Analyze execution logs and diagnose failures</li>
+                                                <li>Optimize AI system performance</li>
+                                                <li>Answer questions about your AI readiness</li>
+                                            </ul>
+                                            <p>What would you like to do?</p>
+                                        </div>
+                                    </div>
+                                    <div class="message-timestamp">Just now</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Typing indicator will be added dynamically -->
+                    </div>
+
+                    <!-- Divider (UNCHANGED) -->
+                    <div class="console-divider" id="consoleDivider"></div>
+
+                    <!-- RIGHT: Context Panel (UNCHANGED) -->
+                    <div class="console-context">
+                        <div class="context-section">
+                            <h3>System Status</h3>
+                            <div class="context-stat">
+                                <span class="context-label">Tier:</span>
+                                <span class="context-value" id="contextTier">Operator</span>
+                            </div>
+                            <div class="context-stat">
+                                <span class="context-label">Credits:</span>
+                                <span class="context-value success" id="contextCredits">50 / 300</span>
+                            </div>
+                            <div class="credit-meter">
+                                <div class="credit-meter-fill" id="creditMeterFill" style="width: 16.67%"></div>
+                            </div>
+                        </div>
+
+                        <div class="context-section">
+                            <h3>Active Workflows</h3>
+                            <div class="context-stat">
+                                <span class="context-label">Total:</span>
+                                <span class="context-value" id="contextWorkflows">1</span>
+                            </div>
+                            <div class="workflow-list" id="workflowList">
+                                <div class="workflow-item">
+                                    <span class="workflow-status active"></span>
+                                    <span>Invoice Processing</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="context-section">
+                            <h3>Recent Executions</h3>
+                            <div class="execution-list" id="executionList">
+                                <div class="execution-item">
+                                    <span class="execution-status success"></span>
+                                    <div class="execution-info">
+                                        <div class="execution-name">Invoice Processing</div>
+                                        <div class="execution-time">2 hours ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Bar (REDESIGNED) -->
+                <div class="console-input-bar">
+                    <div class="input-attachments" id="inputAttachments"></div>
+                    
+                    <div class="input-row">
+                        <div class="input-actions">
+                            <button class="input-btn" id="uploadBtn" title="Upload File">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                                </svg>
+                            </button>
+                            <button class="input-btn" id="workflowBtn" title="Attach Workflow">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <textarea 
+                            id="messageInput" 
+                            class="message-input" 
+                            placeholder="Ask me anything about workflows, logs, or AI systems..."
+                            rows="1"
+                        ></textarea>
+                        
+                        <button class="input-btn-send" id="sendBtn">Send</button>
+                    </div>
+                    
+                    <div class="input-hint">Press Enter to send, Shift+Enter for new line</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" style="display: none;" accept=".pdf,.docx,.csv,.txt">
+
+    <!-- Scripts -->
+    <script src="sidebar-toggle.js"></script>
+    <script src="tier-sync.js"></script>
+    <script src="workflow-preview.js"></script>
+    
+    <!-- NEW: Streaming functionality (MUST load before console.js) -->
+    <script src="console-streaming.js"></script>
+    <script src="console-redesign.js"></script>
+    
+    <!-- Original console logic -->
+    <script src="console.js"></script>
+</body>
+</html>

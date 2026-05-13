@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Aivory</title>
+    
+    <!-- Unified App Shell Styles -->
+    <link rel="stylesheet" href="app-shell.css">
+    
+    <!-- Settings-Specific Styles -->
+    <style>
+        .settings-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .settings-section {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .settings-section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .settings-section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(7, 209, 151, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .settings-section-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent-primary);
+        }
+        
+        .settings-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .settings-section-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .settings-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .settings-field:last-child {
+            margin-bottom: 0;
+        }
+        
+        .settings-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .settings-input {
+            width: 100%;
+            background: var(--bg-main);
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+        }
+        
+        .settings-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        
+        .settings-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .api-key-display {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .api-key-value {
+            flex: 1;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            background: var(--bg-main);
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+        }
+        
+        .api-key-value.masked {
+            letter-spacing: 0.2em;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+        }
+        
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #1a0b2e;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-main);
+            color: var(--text-primary);
+            border: 1px solid var(--border-medium);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-elevated);
+        }
+        
+        .btn-danger {
+            background: rgba(255, 68, 68, 0.1);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.2);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(255, 68, 68, 0.2);
+        }
+        
+        .settings-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .info-box {
+            background: rgba(7, 209, 151, 0.05);
+            border: 1px solid rgba(7, 209, 151, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+        }
+        
+        .info-box-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .integration-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--bg-main);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .integration-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .integration-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--bg-elevated);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .integration-name {
+            font-weight: 500;
+        }
+        
+        .integration-status {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.connected {
+            background: rgba(7, 209, 151, 0.1);
+            color: var(--accent-primary);
+        }
+        
+        .status-badge.disconnected {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-tertiary);
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Unified Sidebar (same as console) -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <img src="Aivory_console_pic.svg" alt="Aivory">
+                    <span>Aivory</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Main</div>
+                    <a href="http://localhost:3001/console" class="sidebar-nav-item" target="_blank">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>Console</span>
+                    </a>
+                    <a href="http://localhost:3000/dashboard" class="sidebar-nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        <span>Overview</span>
+                    </a>
+                    <a href="workflows.html" class="sidebar-nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        </svg>
+                        <span>Workflows</span>
+                    </a>
+                    <a href="logs.html" class="sidebar-nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <span>Logs</span>
+                    </a>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Insights</div>
+                    <a href="diagnostic.html" class="sidebar-nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                        <span>Diagnostics</span>
+                    </a>
+                    <a href="snapshots.html" class="sidebar-nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <span>Snapshots</span>
+                    </a>
+                    <a href="blueprints.html" class="sidebar-nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        <span>Blueprints</span>
+                    </a>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Configuration</div>
+                    <a href="settings.html" class="sidebar-nav-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2-5.2l-4.2 4.2m0 6l4.2 4.2"/>
+                        </svg>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="index.html" class="sidebar-nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    </svg>
+                    <span>Home</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="app-main">
+            <div class="app-topbar">
+                <div class="topbar-left">
+                    <h1 class="topbar-title">Settings</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="topbar-item">
+                        <span class="topbar-badge">Enterprise</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="app-content">
+                <div class="settings-container">
+                    <!-- API Credentials Section -->
+                    <div class="settings-section">
+                        <div class="settings-section-header">
+                            <div class="settings-section-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="settings-section-title">API Credentials</div>
+                                <div class="settings-section-description">Manage your API keys for external integrations</div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-field">
+                            <label class="settings-label">API Key</label>
+                            <div class="api-key-display">
+                                <div class="api-key-value masked" id="apiKeyValue">••••••••••••••••••••••••••••••••</div>
+                                <button class="btn btn-secondary" onclick="toggleApiKeyVisibility()">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                                <button class="btn btn-secondary" onclick="copyApiKey()">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="info-box">
+                                <div class="info-box-title">How to use your API key</div>
+                                <div class="info-box-text">
+                                    Use this key to authenticate API requests from external tools like n8n, custom scripts, or third-party integrations. 
+                                    Include it in the Authorization header: <code>Authorization: Bearer YOUR_API_KEY</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-actions">
+                            <button class="btn btn-primary" onclick="regenerateApiKey()">Regenerate API Key</button>
+                            <button class="btn btn-danger" onclick="revokeApiKey()">Revoke Access</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Workspace Settings Section -->
+                    <div class="settings-section">
+                        <div class="settings-section-header">
+                            <div class="settings-section-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="settings-section-title">Workspace Settings</div>
+                                <div class="settings-section-description">Configure your workspace preferences</div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-field">
+                            <label class="settings-label">Workspace Name</label>
+                            <input type="text" class="settings-input" value="My Aivory Workspace" id="workspaceName">
+                        </div>
+                        
+                        <div class="settings-field">
+                            <label class="settings-label">Workspace Description</label>
+                            <input type="text" class="settings-input" value="AI automation and workflow management" id="workspaceDescription">
+                        </div>
+                        
+                        <div class="settings-field">
+                            <label class="settings-label">Subscription Tier</label>
+                            <input type="text" class="settings-input" value="Enterprise" disabled>
+                        </div>
+                        
+                        <div class="settings-field">
+                            <label class="settings-label">Credit Limit</label>
+                            <input type="text" class="settings-input" value="2000 credits/month" disabled>
+                        </div>
+                        
+                        <div class="settings-actions">
+                            <button class="btn btn-primary" onclick="saveWorkspaceSettings()">Save Changes</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Integrations Section -->
+                    <div class="settings-section">
+                        <div class="settings-section-header">
+                            <div class="settings-section-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="18" cy="5" r="3"/>
+                                    <circle cx="6" cy="12" r="3"/>
+                                    <circle cx="18" cy="19" r="3"/>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="settings-section-title">Integrations</div>
+                                <div class="settings-section-description">Manage connected services and applications</div>
+                            </div>
+                        </div>
+                        
+                        <div class="integration-item">
+                            <div class="integration-info">
+                                <div class="integration-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="integration-name">n8n Workflow Automation</div>
+                                    <div class="integration-status">Connected to local instance</div>
+                                </div>
+                            </div>
+                            <span class="status-badge connected">
+                                <span class="status-dot"></span>
+                                Connected
+                            </span>
+                        </div>
+                        
+                        <div class="integration-item">
+                            <div class="integration-info">
+                                <div class="integration-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="integration-name">Zenclaw AI Engine</div>
+                                    <div class="integration-status">Connected to VPS instance</div>
+                                </div>
+                            </div>
+                            <span class="status-badge connected">
+                                <span class="status-dot"></span>
+                                Connected
+                            </span>
+                        </div>
+                        
+                        <div class="integration-item">
+                            <div class="integration-info">
+                                <div class="integration-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="integration-name">Slack Notifications</div>
+                                    <div class="integration-status">Not connected</div>
+                                </div>
+                            </div>
+                            <span class="status-badge disconnected">
+                                <span class="status-dot"></span>
+                                Disconnected
+                            </span>
+                        </div>
+                        
+                        <div class="settings-actions">
+                            <button class="btn btn-primary">Add Integration</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        let apiKeyVisible = false;
+        const actualApiKey = 'aiv_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        
+        function toggleApiKeyVisibility() {
+            apiKeyVisible = !apiKeyVisible;
+            const keyElement = document.getElementById('apiKeyValue');
+            
+            if (apiKeyVisible) {
+                keyElement.textContent = actualApiKey;
+                keyElement.classList.remove('masked');
+            } else {
+                keyElement.textContent = '••••••••••••••••••••••••••••••••';
+                keyElement.classList.add('masked');
+            }
+        }
+        
+        function copyApiKey() {
+            navigator.clipboard.writeText(actualApiKey);
+            alert('API key copied to clipboard!');
+        }
+        
+        function regenerateApiKey() {
+            if (confirm('Are you sure you want to regenerate your API key? This will invalidate the current key.')) {
+                alert('API key regenerated successfully!');
+                location.reload();
+            }
+        }
+        
+        function revokeApiKey() {
+            if (confirm('Are you sure you want to revoke API access? This will disable all API integrations.')) {
+                alert('API access revoked.');
+            }
+        }
+        
+        function saveWorkspaceSettings() {
+            const name = document.getElementById('workspaceName').value;
+            const description = document.getElementById('workspaceDescription').value;
+            
+            localStorage.setItem('workspace_name', name);
+            localStorage.setItem('workspace_description', description);
+            
+            alert('Workspace settings saved successfully!');
+        }
+    </script>
+</body>
+</html>

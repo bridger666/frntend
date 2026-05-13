@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Flow Test - Aivory</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .test-result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        button {
+            background: #07d197;
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        button:hover {
+            background: #06b880;
+        }
+        .error { color: #ff4444; }
+        .success { color: #07d197; }
+        .warning { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Authentication Flow Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Token Status</h2>
+        <div id="tokenStatus"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test API Connection</h2>
+        <button onclick="testApiConnection()">Test /api/v1/auth/me</button>
+        <div id="apiResult" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test Workflows Endpoint</h2>
+        <button onclick="testWorkflowsEndpoint()">Test /api/v1/workflows/list</button>
+        <div id="workflowsResult" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Actions</h2>
+        <button onclick="clearToken()">Clear Token</button>
+        <button onclick="location.reload()">Refresh Page</button>
+        <button onclick="window.location.href='superadmin-login.html'">Go to Login</button>
+    </div>
+    
+    <script src="app.js"></script>
+    <script src="auth-manager.js"></script>
+    <script>
+        // Display token status
+        function displayTokenStatus() {
+            const token = localStorage.getItem('aivory_session_token');
+            const statusDiv = document.getElementById('tokenStatus');
+            
+            if (token) {
+                statusDiv.innerHTML = `
+                    <p class="success">✓ Token found</p>
+                    <div class="test-result">${token.substring(0, 50)}...</div>
+                `;
+            } else {
+                statusDiv.innerHTML = `<p class="error">✗ No token found</p>`;
+            }
+        }
+        
+        // Test API connection
+        async function testApiConnection() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.textContent = 'Testing...';
+            
+            try {
+                const token = localStorage.getItem('aivory_session_token');
+                if (!token) {
+                    resultDiv.innerHTML = '<span class="error">Error: No token found</span>';
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:8081/api/v1/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<span class="success">✓ Success (${response.status})</span>\n\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `<span class="error">✗ Failed (${response.status})</span>\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+            }
+        }
+        
+        // Test workflows endpoint
+        async function testWorkflowsEndpoint() {
+            const resultDiv = document.getElementById('workflowsResult');
+            resultDiv.textContent = 'Testing...';
+            
+            try {
+                const token = localStorage.getItem('aivory_session_token');
+                if (!token) {
+                    resultDiv.innerHTML = '<span class="error">Error: No token found</span>';
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:8081/api/v1/workflows/list?user_id=GrandMasterRCH', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<span class="success">✓ Success (${response.status})</span>\n\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    const text = await response.text();
+                    resultDiv.innerHTML = `<span class="error">✗ Failed (${response.status})</span>\n\n${text}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+            }
+        }
+        
+        // Clear token
+        function clearToken() {
+            localStorage.removeItem('aivory_session_token');
+            localStorage.removeItem('aivory_user');
+            alert('Token cleared');
+            displayTokenStatus();
+        }
+        
+        // Initialize
+        displayTokenStatus();
+    </script>
+</body>
+</html>

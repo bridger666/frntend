@@ -1,0 +1,154 @@
+/**
+ * AIVORY AI Console - Zenclaw Integration
+ * Handles message streaming and API communication
+ */
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ZENCLAW_ENDPOINT = 'http://43.156.108.96:8080/chat';
+const ZENCLAW_TRIGGER_ENDPOINT = 'http://43.156.108.96:8080/trigger';
+
+const AIVORY_SYSTEM_PROMPT = "You are Aivory, a warm and intelligent AI assistant on the Aivory platform. Help paid users with workflow generation, AI readiness assessment, log diagnostics, blueprint execution, and strategic advisory. Always detect and respond in the user's language (English US, English UK, Bahasa Indonesia, Arabic). Keep responses concise and use markdown formatting.";
+
+// ============================================================================
+// CONNECTION DIAGNOSTICS
+// ============================================================================
+
+// Test connection on page load
+async function testZenclawConnection() {
+    try {
+        const response = await fetch(ZENCLAW_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: 'ping',
+                history: [],
+                system_prompt: 'Reply with "pong"'
+            })
+        });
+        
+        if (response.ok) {
+            console.log('✅ Zenclaw connection successful');
+            return true;
+        } else {
+            console.warn('⚠️ Zenclaw returned status:', response.status);
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Zenclaw connection failed:', error.message);
+        console.error('Endpoint:', ZENCLAW_ENDPOINT);
+        console.error('This could be due to:');
+        console.error('  1. CORS policy blocking the request');
+        console.error('  2. Network/firewall blocking the connection');
+        console.error('  3. Server is temporarily unavailable');
+        return false;
+    }
+}
+
+// Run connection test when page loads
+if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => testZenclawConnection(), 1000);
+    });
+}
+
+// ============================================================================
+// MESSAGE SENDING WITH ZENCLAW
+// ============================================================================
+
+async function sendMessageWithSimulatedStreaming(userMessage) {
+    // NOTE: User message is already added by sendMessage() function
+    // This function only handles the AI response
+    
+    // Show typing indicator
+    showTypingIndicator('Thinking...');
+    
+    // Track thinking time
+    const startTime = Date.now();
+    
+    // Build history from last 10 messages
+    const history = ConsoleState.messages
+        .slice(-10)
+        .filter(m => m.role === 'user' || m.role === 'assistant')
+        .map(m => ({ role: m.role, content: m.content }));
+    
+    try {
+        const response = await fetch(ZENCLAW_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: userMessage,
+                history: history,
+                system_prompt: AIVORY_SYSTEM_PROMPT
+            })
+        });
+        
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Zenclaw error ${response.status}: ${errText}`);
+        }
+        
+        const data = await response.json();
+        const reply = data.reply || 'No response received.';
+        const modelUsed = data.model_used || 'unknown';
+        const intent = data.intent || 'general';
+        
+        // Calculate thinking time
+        const thinkingTime = ((Date.now() - startTime) / 1000).toFixed(1);
+        
+        // Deduct 1 credit per message
+        ConsoleState.credits = Math.max(0, ConsoleState.credits - 1);
+        updateUI();
+        
+        // Hide typing indicator BEFORE rendering message
+        hideTypingIndicator();
+        
+        // Auto-detect workflow JSON and trigger n8n (fire and forget, no UI blocking)
+        const jsonMatch = reply.match(/```json([\s\S]*?)```/);
+        if (jsonMatch) {
+            try {
+                const workflowPayload = JSON.parse(jsonMatch[1].trim());
+                if (workflowPayload.trigger === 'aivory_workflow') {
+                    console.log('Workflow trigger detected, sending to n8n...');
+                    fetch(ZENCLAW_TRIGGER_ENDPOINT, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ payload: workflowPayload })
+                    }).catch(e => console.warn('n8n trigger failed:', e));
+                }
+            } catch (e) {
+                console.warn('Could not parse workflow JSON:', e);
+            }
+        }
+        
+        // Add AI response AFTER hiding typing indicator with metadata
+        addMessage('assistant', reply, [], {
+            tokens: reply.split(' ').length,
+            confidence: 0.95,
+            cost: 1,
+            model: modelUsed,
+            intent: intent,
+            thinkingTime: thinkingTime
+        });
+        
+        // Save conversation
+        saveConversation();
+        
+    } catch (error) {
+        hideTypingIndicator();
+        console.error('Zenclaw fetch error:', error);
+        addMessage('assistant', `⚠️ Connection error: ${error.message}\n\nUnable to reach Zenclaw AI service at ${ZENCLAW_ENDPOINT}. Please check that the Zenclaw server is running on port 8080.`);
+        saveConversation();
+    }
+}
+
+// ============================================================================
+// HELPER FUNCTION
+// ============================================================================
+
+function addMessageWithStreaming(role, content, files = [], reasoning = null, blueprint = null, shouldStream = true) {
+    // Simply calls the existing addMessage function
+    addMessage(role, content, files, reasoning, blueprint, shouldStream);
+}
