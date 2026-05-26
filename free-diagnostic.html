@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aivory — Free AI Readiness Diagnostic</title>
+  <link rel="icon" href="Favicon_Aivory.svg" type="image/svg+xml">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Doto:wght@400;600;700;800&family=Inter+Tight:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    /* === RESET & BASE === */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #ffffff;
+      color: #111111;
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* === VARIABLES === */
+    :root {
+      --bg: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #fafafa;
+      --accent: #000000;
+      --purple: #000000;
+      --purple-hover: #333333;
+      --text-primary: #111111;
+      --text-secondary: #555555;
+      --text-muted: #888888;
+      --border: #eaeaea;
+      --border-strong: #000000;
+      --green: #000000;
+      --amber: #ffb020;
+      --red: #ff5757;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    /* === CLOSE BUTTON === */
+    .close-diagnostic-btn {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid #eaeaea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000000;
+      font-size: 1.25rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .close-diagnostic-btn:hover {
+      background: #f0f0f0;
+      transform: scale(1.05);
+      border-color: #cccccc;
+    }
+
+    /* === LAYOUT === */
+    .diagnostic-app {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 2rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .diagnostic-app.results-mode {
+      max-width: 1200px;
+    }
+
+    /* === PROGRESS BAR === */
+    .progress-bar-container {
+      width: 100%;
+      height: 4px;
+      background: #eaeaea;
+      border-radius: 2px;
+      margin-bottom: 2.5rem;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: #000000;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    /* === STEP CONTAINER === */
+    .step-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* === COMPANY PROFILE (Step 0) === */
+    .profile-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid #000000;
+      padding-bottom: 1.5rem;
+    }
+
+    .profile-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #111111;
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+
+    .profile-header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #000000;
+      box-shadow: 0 0 0 1px #000000;
+    }
+
+    .form-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='rgba(0,0,0,0.5)' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+    }
+
+    .form-group select option {
+      background: #ffffff;
+      color: #111111;
+    }
+
+    /* === BUTTONS === */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 2.5rem;
+      background: #ffffff;
+      color: #000000;
+      border: 2px solid #000000;
+      border-radius: 0px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      margin-top: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #000000;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* === QUESTION SCREEN === */
+    .question-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid #000000;
+      padding-bottom: 1.5rem;
+    }
+
+    .question-number {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .question-text {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: #111111;
+    }
+
+    /* === ANSWER OPTIONS === */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .option-card {
+      padding: 1.125rem 1.5rem;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .option-card:hover {
+      background: var(--bg-card-hover);
+      border-color: #cccccc;
+      color: var(--text-primary);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .option-card.selected {
+      background: #fafafa;
+      border: 2px solid #000000;
+      color: #111111;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* === NAVIGATION === */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 0.5rem 0;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover {
+      color: var(--text-primary);
+    }
+
+    .btn-next {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 2.5rem;
+      background: #ffffff;
+      color: #000000;
+      border: 2px solid #000000;
+      border-radius: 0px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-next:hover:not(:disabled) {
+      background: #000000;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-next:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* === RESULTS PAGE === */
+    .results-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid #000000;
+    }
+
+    .results-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #111111;
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+
+    .results-header .meta {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Score Ring */
+    .score-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .score-ring-wrapper {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-ring-wrapper svg {
+      transform: rotate(-90deg);
+    }
+
+    .score-ring-bg {
+      fill: none;
+      stroke: #eaeaea;
+      stroke-width: 10;
+    }
+
+    .score-ring-fill {
+      fill: none;
+      stroke: #000000;
+      stroke-width: 10;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.2s ease;
+    }
+
+    .score-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3rem;
+      font-weight: 800;
+      color: #111111;
+      letter-spacing: -0.04em;
+    }
+
+    .maturity-label {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111111;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .framing-sentence {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 550px;
+      line-height: 1.5;
+    }
+
+    /* 5-step progress */
+    .maturity-steps {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1.5rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .maturity-step {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: #eaeaea;
+      position: relative;
+    }
+
+    .maturity-step.active {
+      background: #000000;
+    }
+
+    .maturity-step.past {
+      background: #999999;
+    }
+
+    /* Dimension Breakdown */
+    .dimension-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .dimension-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      color: #111111;
+      border-bottom: 1px solid #000000;
+      padding-bottom: 0.75rem;
+    }
+
+    .dimension-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .dimension-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dimension-card {
+      padding: 1.25rem;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      border-left: 4px solid #000000;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .dimension-card.amber {
+      border-left-color: var(--amber);
+    }
+
+    .dimension-card.red {
+      border-left-color: var(--red);
+    }
+
+    .dimension-card .dim-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #111111;
+      margin-bottom: 0.25rem;
+    }
+
+    .dimension-card .dim-score {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Strengths & Blockers */
+    .insights-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      .insights-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .insights-col h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+      color: #111111;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid #000000;
+      padding-bottom: 0.75rem;
+    }
+
+    .insights-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .insights-col li {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      padding: 0.875rem 1.125rem;
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-weight: 500;
+    }
+
+    .insights-col li .icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Narrative */
+    .narrative-section {
+      margin-bottom: 3.5rem;
+      padding: 2rem;
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      border-left: 4px solid #000000;
+    }
+
+    .narrative-section p {
+      font-size: 1.05rem;
+      color: #333333;
+      line-height: 1.75;
+      font-weight: 400;
+    }
+
+    /* Blurred Locked Section */
+    .locked-section {
+      position: relative;
+      margin-bottom: 3.5rem;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .locked-content {
+      filter: blur(6px);
+      pointer-events: none;
+      user-select: none;
+      padding: 2.5rem;
+      background: #ffffff;
+    }
+
+    .locked-content .locked-item {
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      background: #fafafa;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .locked-content .locked-item h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111111;
+      margin-bottom: 0.5rem;
+    }
+
+    .locked-content .locked-item p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .lock-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(2px);
+    }
+
+    .lock-overlay .lock-icon {
+      width: 48px;
+      height: 48px;
+      background: #000000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .lock-overlay .lock-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #111111;
+    }
+
+    /* Conversion CTA */
+    .upgrade-section {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .upgrade-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+      align-items: stretch;
+    }
+
+    .upgrade-card,
+    .strategy-card {
+      border: 2px solid #000000;
+      border-radius: var(--radius);
+      padding: 2rem;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .upgrade-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .upgrade-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .upgrade-card h3,
+    .strategy-card h3 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #111111;
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+
+    .upgrade-price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #111111;
+      margin: 1rem 0 0.35rem;
+    }
+
+    .upgrade-price span {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0;
+      color: var(--text-muted);
+    }
+
+    .upgrade-summary,
+    .strategy-card p {
+      font-size: 0.98rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+    }
+
+    .comparison-note {
+      padding: 1rem;
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-left: 4px solid #000000;
+      font-size: 0.92rem;
+      color: #333333;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+
+    .cta-features {
+      list-style: none;
+      text-align: left;
+      margin: 0 0 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      flex: 1;
+    }
+
+    .cta-features li {
+      font-size: 0.95rem;
+      color: #333333;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .cta-features li::before {
+      content: '✓';
+      color: #000000;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 2.5rem;
+      background: #ffffff;
+      color: #000000;
+      border: 2px solid #000000;
+      border-radius: 0px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      margin-top: auto;
+    }
+
+    .btn-cta:hover {
+      background: #000000;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .strategy-card {
+      margin-top: 1.25rem;
+      text-align: center;
+    }
+
+    .strategy-card .btn-cta {
+      max-width: 430px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 600px) {
+      .diagnostic-app {
+        padding: 4rem 1rem 1.5rem;
+      }
+
+      .profile-header h1 {
+        font-size: 2rem;
+      }
+
+      .question-text {
+        font-size: 1.75rem;
+      }
+
+      .score-ring-wrapper {
+        width: 160px;
+        height: 160px;
+      }
+
+      .score-number {
+        font-size: 2.25rem;
+      }
+
+      .results-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .upgrade-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .upgrade-card,
+      .strategy-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="index.html" class="close-diagnostic-btn" title="Close Diagnostic" aria-label="Close Diagnostic">✕</a>
+  <div class="diagnostic-app" id="app">
+    <!-- Rendered by JS -->
+  </div>
+  <script>
+    // ============================================================
+    // AIVORY FREE DIAGNOSTIC — Complete Client-Side Application
+    // ============================================================
+
+    (function () {
+      'use strict';
+
+      // --- DATA ---
+      const QUESTIONS = [
+        { id: 'business_objective', question: 'What is your primary business objective for AI?', options: ['No clear goal yet', 'Vague / directional goals', 'Specific goal defined', 'Quantified goal with KPIs'] },
+        { id: 'current_ai_usage', question: 'Where is your organization on AI today?', options: ['No AI usage at all', 'Exploring / reading about it', 'Running pilots or experiments', 'AI deployed in production'] },
+        { id: 'data_availability', question: 'How is your business data organized and accessible?', options: ['No centralized data', 'Siloed across systems', 'Partially centralized', 'Fully centralized and clean'] },
+        { id: 'process_documentation', question: 'How well are your business processes documented?', options: ['Nothing documented', 'Informal / in people\'s heads', 'Some SOPs exist', 'Comprehensive SOPs and runbooks'] },
+        { id: 'workflow_standardization', question: 'How standardized are your day-to-day workflows?', options: ['Ad-hoc, varies per person', 'Some consistency', 'Mostly standardized', 'Fully standardized across teams'] },
+        { id: 'erp_integration', question: 'How integrated are your core business systems (ERP, CRM, etc.)?', options: ['No systems in place', 'Disconnected / manual sync', 'Partially integrated', 'Fully integrated with APIs'] },
+        { id: 'automation_level', question: 'What percentage of repetitive tasks are currently automated?', options: ['Fully manual', 'Less than 10%', '10–50% automated', 'Over 50% automated'] },
+        { id: 'decision_speed', question: 'How quickly does your team make key business decisions?', options: ['Takes months', 'Takes weeks', 'Takes days', 'Same day or within hours'] },
+        { id: 'leadership_alignment', question: 'How aligned is your leadership team on AI adoption?', options: ['No alignment or interest', 'Some interest, not committed', 'Supportive and budgeting', 'Actively championing AI'] },
+        { id: 'budget_ownership', question: 'What is your current budget situation for AI investment?', options: ['No budget discussed', 'Exploring options', 'Budget allocated', 'Dedicated AI budget with an owner'] },
+        { id: 'change_readiness', question: 'How open is your organization to changing how work gets done?', options: ['Resistant to change', 'Cautious', 'Open to it', 'Actively embracing change'] },
+        { id: 'internal_capability', question: 'How strong is your internal team\'s AI or technical capability?', options: ['No technical team', 'Limited digital skills', 'Some AI exposure', 'Dedicated AI / data team'] }
+      ];
+
+      const WEIGHTS = {
+        business_objective: 1.5, current_ai_usage: 1.0, data_availability: 1.5,
+        process_documentation: 1.0, workflow_standardization: 1.0, erp_integration: 0.8,
+        automation_level: 1.2, decision_speed: 0.8, leadership_alignment: 1.5,
+        budget_ownership: 1.2, change_readiness: 1.0, internal_capability: 1.2
+      };
+      const MAX_RAW = 43.5;
+
+      const DIMENSION_LABELS = {
+        business_objective: 'Business Objective', current_ai_usage: 'Current AI Usage',
+        data_availability: 'Data Availability', process_documentation: 'Process Documentation',
+        workflow_standardization: 'Workflow Standardization', erp_integration: 'System Integration',
+        automation_level: 'Automation Level', decision_speed: 'Decision Speed',
+        leadership_alignment: 'Leadership Alignment', budget_ownership: 'Budget Ownership',
+        change_readiness: 'Change Readiness', internal_capability: 'Internal Capability'
+      };
+
+      const INDUSTRIES = [
+        { value: '', label: 'Select industry...' },
+        { value: 'manufacturing', label: 'Manufacturing' },
+        { value: 'retail', label: 'Retail & e-commerce' },
+        { value: 'financial', label: 'Financial services' },
+        { value: 'healthcare', label: 'Healthcare' },
+        { value: 'logistics', label: 'Logistics & supply chain' },
+        { value: 'professional', label: 'Professional services' },
+        { value: 'property', label: 'Property & construction' },
+        { value: 'technology', label: 'Technology' },
+        { value: 'education', label: 'Education' },
+        { value: 'other', label: 'Other' }
+      ];
+
+      const SIZES = [
+        { value: '', label: 'Select company size...' },
+        { value: 'micro', label: '1–10 (Micro)' },
+        { value: 'small', label: '11–50 (Small)' },
+        { value: 'medium', label: '51–200 (Medium)' },
+        { value: 'large', label: '201–1000 (Large)' },
+        { value: 'enterprise', label: '1000+ (Enterprise)' }
+      ];
+
+      const CARD_BG = '#ffffff';
+      const DIAGNOSTIC_CARD_LOGO = 'Aivory logo for diagnostic card.svg';
+      const PREVIEW_SCALE = 0.6;
+      const MATURITY_STAGES = ['Initial', 'Developing', 'Defined', 'Managed', 'Optimizing'];
+      const FALLBACK_BLOCKER_IDS = ['business_objective', 'decision_speed', 'erp_integration'];
+
+      // --- STATE ---
+      let state = {
+        step: 'profile', // profile | question | results
+        questionIndex: 0,
+        companyName: '',
+        companySize: '',
+        industry: '',
+        answers: {} // { dimension_id: 0|1|2|3 }
+      };
+
+      const app = document.getElementById('app');
+
+      // --- SCORING ENGINE ---
+      function computeScore(answers) {
+        let rawScore = 0;
+        for (const [dim, val] of Object.entries(answers)) {
+          rawScore += val * (WEIGHTS[dim] || 1.0);
+        }
+        return Math.round((rawScore / MAX_RAW) * 100);
+      }
+
+      function getMaturityLevel(score) {
+        if (score <= 39) return 'Initial';
+        if (score <= 59) return 'Developing';
+        if (score <= 74) return 'Defined';
+        if (score <= 89) return 'Managed';
+        return 'Optimizing';
+      }
+
+      function getMaturityIndex(level) {
+        return MATURITY_STAGES.indexOf(level);
+      }
+
+      function getMaturityIndicatorPercent(level) {
+        const stageIndex = Math.max(0, getMaturityIndex(level));
+        return ((stageIndex + 0.5) / MATURITY_STAGES.length) * 100;
+      }
+
+      function getFramingSentence(level, score) {
+        const sentences = {
+          Initial: `A score of ${score}/100 means you're at the starting line — but that's a valid place to begin.`,
+          Developing: `At ${score}/100, the foundation is forming. Focus on quick wins to build momentum.`,
+          Defined: `${score}/100 — solid ground. You're ready to move from experiments to structured implementation.`,
+          Managed: `${score}/100 puts you ahead of most. Time to scale what's working and optimize further.`,
+          Optimizing: `${score}/100 — elite territory. AI is part of your operational DNA.`
+        };
+        return sentences[level];
+      }
+
+      function generateDiagnosticId() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let r = '';
+        for (let i = 0; i < 8; i++) r += chars[Math.floor(Math.random() * chars.length)];
+        return 'DIAG_' + r;
+      }
+
+      function getTopAndBottom(answers) {
+        const dims = Object.entries(answers).map(([id, score]) => ({
+          id, score, label: DIMENSION_LABELS[id], weight: WEIGHTS[id] || 1
+        }));
+        dims.sort((a, b) => b.score !== a.score ? b.score - a.score : b.weight - a.weight);
+        return { top: dims.slice(0, 3), bottom: dims.slice(-3).reverse() };
+      }
+
+      function getStrengths(answers) {
+        return Object.entries(answers)
+          .filter(([_, v]) => v >= 2)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([id, score]) => ({ id, label: DIMENSION_LABELS[id], score }));
+      }
+
+      function getBlockers(answers) {
+        const scoredBlockers = Object.entries(answers)
+          .filter(([_, v]) => v <= 1)
+          .sort((a, b) => a[1] !== b[1] ? a[1] - b[1] : (WEIGHTS[b[0]] || 1) - (WEIGHTS[a[0]] || 1))
+          .map(([id, score]) => ({ id, label: DIMENSION_LABELS[id], score }));
+
+        for (const id of FALLBACK_BLOCKER_IDS) {
+          if (scoredBlockers.length >= 3) break;
+          if (scoredBlockers.some(item => item.id === id)) continue;
+          if ((answers[id] ?? 3) > 1) continue;
+
+          scoredBlockers.push({
+            id,
+            label: DIMENSION_LABELS[id],
+            score: answers[id] ?? 1,
+            fallback: true
+          });
+        }
+
+        return scoredBlockers.slice(0, 3);
+      }
+
+      function getImprovementAreas(answers, blockers) {
+        if (blockers.length) return blockers;
+
+        return Object.entries(answers)
+          .filter(([_, score]) => score < 3)
+          .sort((a, b) => a[1] !== b[1] ? a[1] - b[1] : (WEIGHTS[b[0]] || 1) - (WEIGHTS[a[0]] || 1))
+          .slice(0, 2)
+          .map(([id, score]) => ({ id, label: DIMENSION_LABELS[id], score }));
+      }
+
+      function formatAreaList(items) {
+        if (!items.length) return '';
+        return items.map(item => `${item.label} (${item.score}/3)`).join(', ');
+      }
+
+      function getQuickNote(score, maturity, strengths, improvementAreas) {
+        const strongest = strengths[0];
+        const improvementText = formatAreaList(improvementAreas);
+
+        if (!improvementAreas.length) {
+          return {
+            title: `Quick note: ${score}/100 — ${maturity}`,
+            body: `All tracked dimensions are scoring strongly. ${strongest ? `${strongest.label} is the clearest current strength.` : 'The current answers show a balanced AI readiness base.'}`
+          };
+        }
+
+        return {
+          title: `Quick note: ${score}/100 — ${maturity}`,
+          body: `${strongest ? `Strongest signal: ${strongest.label} (${strongest.score}/3). ` : ''}Needs improvement: ${improvementText}.`
+        };
+      }
+
+      function getNarrative(companyName, score, maturity) {
+        const templates = {
+          Initial: `For ${companyName}, the current score of ${score}/100 indicates an early stage of AI readiness. This is a valid starting point — many successful organizations began here. The recommendation is to start with one small, well-scoped pilot, measure results, then scale gradually.`,
+          Developing: `For ${companyName}, a score of ${score}/100 shows the foundation is beginning to take shape, but critical gaps remain. Organizations at this stage benefit most from quick wins — choose an AI use case where ROI can be demonstrated within 30–90 days.`,
+          Defined: `For ${companyName}, a score of ${score}/100 indicates solid readiness — processes are defined and several foundations are in place. This is the right moment to move from experimentation to structured implementation with measurable business targets.`,
+          Managed: `For ${companyName}, a score of ${score}/100 reflects advanced maturity — AI is managed and delivering real value. The next step is expanding into more complex use cases and building tighter ROI monitoring systems.`,
+          Optimizing: `For ${companyName}, a score of ${score}/100 places you among elite organizations that have made AI a core part of their operational DNA. The focus now is generative AI, agentic workflows, and AI-driven competitive differentiation.`
+        };
+        return templates[maturity];
+      }
+
+      // --- SUPABASE FIRE-AND-FORGET ---
+      function saveToSupabase(data) {
+        try {
+          fetch('https://zdrjyoduvcqnuvucygyg.supabase.co/rest/v1/free_diagnostics', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkcmp5b2R1dmNxbnV2dWN5Z3lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDIzNTQsImV4cCI6MjA5MzgxODM1NH0.4zIYgg3td1V6n8YsJpGCM_dayqjvx2nK9nM1JwfVuNQ',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkcmp5b2R1dmNxbnV2dWN5Z3lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDIzNTQsImV4cCI6MjA5MzgxODM1NH0.4zIYgg3td1V6n8YsJpGCM_dayqjvx2nK9nM1JwfVuNQ',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify(data)
+          }).catch(() => { });
+        } catch (e) { /* silent */ }
+      }
+
+      // --- RENDER FUNCTIONS ---
+      function render() {
+        if (state.step === 'profile') renderProfile();
+        else if (state.step === 'question') renderQuestion();
+        else if (state.step === 'results') renderResults();
+      }
+
+      function renderProfile() {
+        app.className = 'diagnostic-app';
+        const progress = 0;
+        app.innerHTML = `
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" style="width: ${progress}%"></div>
+    </div>
+    <div class="step-container" key="profile">
+      <div class="profile-header">
+        <h1>Let's start with your company</h1>
+        <p>This helps us tailor the diagnostic to your context.</p>
+      </div>
+      <div class="form-group">
+        <label for="company-name">Company name</label>
+        <input type="text" id="company-name" placeholder="e.g. PT Maju Bersama" value="${escHtml(state.companyName)}" />
+      </div>
+      <div class="form-group">
+        <label for="company-size">Company size</label>
+        <select id="company-size">
+          ${SIZES.map(s => `<option value="${s.value}" ${state.companySize === s.value ? 'selected' : ''}>${s.label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="industry">Industry</label>
+        <select id="industry">
+          ${INDUSTRIES.map(i => `<option value="${i.value}" ${state.industry === i.value ? 'selected' : ''}>${i.label}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn-primary" id="btn-continue" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-right: 4px;"><path d="M7 7l10 10M17 7v10H7"/></svg>
+        Continue
+      </button>
+    </div>
+  `;
+        // Bind events
+        const nameInput = document.getElementById('company-name');
+        const sizeSelect = document.getElementById('company-size');
+        const industrySelect = document.getElementById('industry');
+        const btnContinue = document.getElementById('btn-continue');
+
+        function validate() {
+          state.companyName = nameInput.value;
+          state.companySize = sizeSelect.value;
+          state.industry = industrySelect.value;
+          const valid = state.companyName.trim().length >= 2 && state.companySize && state.industry;
+          btnContinue.disabled = !valid;
+        }
+        nameInput.addEventListener('input', validate);
+        sizeSelect.addEventListener('change', validate);
+        industrySelect.addEventListener('change', validate);
+        validate();
+
+        btnContinue.addEventListener('click', () => {
+          state.step = 'question';
+          state.questionIndex = 0;
+          render();
+        });
+      }
+
+      function renderQuestion() {
+        app.className = 'diagnostic-app';
+        const q = QUESTIONS[state.questionIndex];
+        const totalSteps = QUESTIONS.length + 1; // +1 for profile
+        const progress = ((state.questionIndex + 1) / totalSteps) * 100;
+        const selectedAnswer = state.answers[q.id];
+
+        app.innerHTML = `
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" style="width: ${progress}%"></div>
+    </div>
+    <div class="step-container" key="q${state.questionIndex}">
+      <div class="question-header">
+        <div class="question-number">Question ${state.questionIndex + 1} of 12</div>
+        <div class="question-text">${escHtml(q.question)}</div>
+      </div>
+      <div class="options-list">
+        ${q.options.map((opt, i) => `
+          <div class="option-card ${selectedAnswer === i ? 'selected' : ''}" data-value="${i}">
+            ${escHtml(opt)}
+          </div>
+        `).join('')}
+      </div>
+      <div class="nav-row">
+        <button class="btn-back" id="btn-back">${state.questionIndex === 0 ? '← Back to profile' : '← Previous'}</button>
+        <button class="btn-next" id="btn-next" ${selectedAnswer === undefined ? 'disabled' : ''}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-right: 4px;"><path d="M7 7l10 10M17 7v10H7"/></svg>
+          ${state.questionIndex === 11 ? 'See results' : 'Next'}
+        </button>
+      </div>
+    </div>
+  `;
+
+        // Bind option clicks
+        document.querySelectorAll('.option-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const val = parseInt(card.dataset.value);
+            state.answers[q.id] = val;
+            // Update UI
+            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            document.getElementById('btn-next').disabled = false;
+          });
+        });
+
+        // Back button
+        document.getElementById('btn-back').addEventListener('click', () => {
+          if (state.questionIndex === 0) {
+            state.step = 'profile';
+          } else {
+            state.questionIndex--;
+          }
+          render();
+        });
+
+        // Next button
+        document.getElementById('btn-next').addEventListener('click', () => {
+          if (state.answers[q.id] === undefined) return;
+          if (state.questionIndex < 11) {
+            state.questionIndex++;
+            render();
+          } else {
+            // All done — compute and show results
+            finishDiagnostic();
+          }
+        });
+      }
+
+      function finishDiagnostic() {
+        const score = computeScore(state.answers);
+        const maturity = getMaturityLevel(score);
+        const diagnosticId = generateDiagnosticId();
+
+        // Fire-and-forget Supabase insert
+        saveToSupabase({
+          diagnostic_id: diagnosticId,
+          company_name: state.companyName.trim(),
+          company_size: state.companySize,
+          industry: state.industry,
+          score: score,
+          maturity_level: maturity
+        });
+
+        // Store result for rendering
+        state.result = { score, maturity, diagnosticId };
+        state.step = 'results';
+        render();
+      }
+
+      const INSIGHT_DESCRIPTIONS = {
+        business_objective: {
+          strength: "Clear, quantified AI objectives ensure every project aligns directly with bottom-line revenue and operational efficiency.",
+          blocker: "Without clear, quantified KPIs, AI projects risk becoming disconnected science experiments with no measurable ROI."
+        },
+        current_ai_usage: {
+          strength: "Active AI deployment creates internal momentum, upskills teams, and establishes proven operational frameworks.",
+          blocker: "Staying in the exploratory phase while competitors deploy AI creates an expanding operational capability gap."
+        },
+        data_availability: {
+          strength: "Centralized, clean data pipelines provide the essential fuel needed for advanced AI models and automated workflows.",
+          blocker: "Data siloed across legacy systems prevents AI from seeing the full operational picture, limiting ROI significantly."
+        },
+        process_documentation: {
+          strength: "Comprehensive SOPs and runbooks make it easy to identify automation bottlenecks and deploy agentic workflows.",
+          blocker: "Informal, undocumented processes make it nearly impossible to map and automate complex operational workflows."
+        },
+        workflow_standardization: {
+          strength: "Standardized day-to-day workflows allow AI solutions to scale seamlessly across multiple teams and departments.",
+          blocker: "Ad-hoc, inconsistent workflows mean AI solutions must be custom-tailored for individual users, destroying scalability."
+        },
+        erp_integration: {
+          strength: "Fully integrated core systems via APIs allow AI agents to take direct action and synchronize data instantly.",
+          blocker: "Disconnected systems require manual data entry and synchronization, creating friction that negates automation gains."
+        },
+        automation_level: {
+          strength: "High automation of repetitive tasks frees up valuable human capital for high-leverage strategic initiatives.",
+          blocker: "Heavy reliance on manual, repetitive tasks drains team energy and creates unnecessary operational overhead."
+        },
+        decision_speed: {
+          strength: "Rapid decision-making cycles allow your organization to iterate quickly and capitalize on new AI advancements.",
+          blocker: "Slow, bureaucratic decision loops prevent your team from deploying and iterating on AI solutions effectively."
+        },
+        leadership_alignment: {
+          strength: "Your C-suite is actively championing AI adoption, this is the hardest thing to build and you have it.",
+          blocker: "Lack of leadership buy-in and alignment starves AI initiatives of the essential resources and strategic focus needed."
+        },
+        budget_ownership: {
+          strength: "Dedicated AI budget with clear ownership ensures continuous funding and accountability for strategic deployment.",
+          blocker: "Without a dedicated AI budget or clear ownership, initiatives get stalled in endless financial approval cycles."
+        },
+        change_readiness: {
+          strength: "An organization open to embracing change can seamlessly adopt AI-driven operating models without cultural friction.",
+          blocker: "Internal resistance to change creates cultural inertia that can sabotage even the most well-designed AI tools."
+        },
+        internal_capability: {
+          strength: "Strong internal technical capability enables rapid prototyping, custom integration, and secure AI governance.",
+          blocker: "Limited internal digital capability forces over-reliance on external vendors and slows down execution speed."
+        }
+      };
+
+      window.downloadDiagnosticCards = async function () {
+        const btn = document.getElementById('btn-download-ig');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'Generating PNGs...';
+        btn.disabled = true;
+
+        const downloadCanvas = (canvas, filename) => {
+          const link = document.createElement('a');
+          link.download = filename;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        };
+
+        const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+
+        const inlineImages = async (node) => {
+          const images = Array.from(node.querySelectorAll('img'));
+          await Promise.all(images.map(async (img) => {
+            try {
+              const response = await fetch(img.src);
+              const blob = await response.blob();
+              img.src = await blobToDataUrl(blob);
+              await new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+              });
+            } catch (_) {
+              // Keep the original source if inlining fails; the fallback renderer can still try it.
+            }
+          }));
+        };
+
+        const renderWithForeignObject = async (node) => {
+          const serializedNode = new XMLSerializer().serializeToString(node);
+          const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350">
+        <foreignObject width="1080" height="1350">
+          <div xmlns="http://www.w3.org/1999/xhtml">${serializedNode}</div>
+        </foreignObject>
+      </svg>
+    `;
+          const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+          const imageUrl = URL.createObjectURL(svgBlob);
+
+          try {
+            const image = new Image();
+            image.decoding = 'async';
+            const imageReady = new Promise((resolve, reject) => {
+              image.onload = resolve;
+              image.onerror = reject;
+            });
+            image.src = imageUrl;
+            await imageReady;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 1080;
+            canvas.height = 1350;
+            const context = canvas.getContext('2d');
+            context.fillStyle = CARD_BG;
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0);
+            return canvas;
+          } finally {
+            URL.revokeObjectURL(imageUrl);
+          }
+        };
+
+        const renderCardToCanvas = async (sourceNode, exportId) => {
+          let wrapper = null;
+          let exportNode = null;
+
+          try {
+            if (!sourceNode) throw new Error('Diagnostic card is not available');
+
+            exportNode = sourceNode.cloneNode(true);
+            exportNode.id = exportId;
+            exportNode.style.position = 'relative';
+            exportNode.style.left = '0px';
+            exportNode.style.top = '0px';
+            exportNode.style.width = '1080px';
+            exportNode.style.height = '1350px';
+            exportNode.style.overflow = 'hidden';
+            exportNode.style.transform = 'none';
+            exportNode.style.transformOrigin = 'top left';
+            exportNode.style.background = CARD_BG;
+
+            wrapper = document.createElement('div');
+            wrapper.id = exportId + '-wrapper';
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = '0px';
+            wrapper.style.top = '0px';
+            wrapper.style.width = '1080px';
+            wrapper.style.height = '1350px';
+            wrapper.style.zIndex = '-9999';
+            wrapper.style.pointerEvents = 'none';
+            wrapper.style.visibility = 'hidden';
+            wrapper.appendChild(exportNode);
+            document.body.appendChild(wrapper);
+
+            await inlineImages(exportNode);
+
+            try {
+              if (!window.html2canvas) throw new Error('html2canvas is not loaded');
+              return await html2canvas(exportNode, {
+                scale: 1,
+                width: 1080,
+                height: 1350,
+                x: 0,
+                y: 0,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: CARD_BG,
+                logging: false,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: 1080,
+                windowHeight: 1350,
+                onclone: (clonedDoc) => {
+                  const clonedWrapper = clonedDoc.getElementById(wrapper.id);
+                  if (clonedWrapper) {
+                    clonedWrapper.style.visibility = 'visible';
+                  }
+                }
+              });
+            } catch (html2canvasError) {
+              console.warn('html2canvas export failed, trying SVG renderer:', html2canvasError);
+              return await renderWithForeignObject(exportNode);
+            }
+          } finally {
+            if (wrapper) wrapper.remove();
+          }
+        };
+
+        try {
+          const slides = [
+            { node: document.getElementById('ig-slide-1'), suffix: 'Card_1' },
+            { node: document.getElementById('ig-slide-2'), suffix: 'Card_2' }
+          ];
+
+          if (document.fonts?.ready) await document.fonts.ready;
+
+          const canvases = [];
+          for (const [index, slide] of slides.entries()) {
+            const canvas = await renderCardToCanvas(slide.node, `ig-slide-export-${index + 1}`);
+            canvases.push({ canvas, suffix: slide.suffix });
+          }
+
+          const linksArea = document.getElementById('download-links-area');
+          if (linksArea) {
+            linksArea.innerHTML = canvases.map((item, i) => {
+              const dataUrl = item.canvas.toDataURL('image/png');
+              const filename = `${state.companyName.trim() || 'Company'}_AI_Diagnostic_${item.suffix}.png`;
+              return `<a href="${dataUrl}" download="${filename}" class="btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.95rem; max-width: 220px; margin: 0; border-color: #111; background: #fafafa; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;">📥 Download Card ${i + 1}</a>`;
+            }).join('');
+            linksArea.style.opacity = '1';
+          }
+
+          for (const [index, item] of canvases.entries()) {
+            downloadCanvas(item.canvas, `${state.companyName.trim() || 'Company'}_AI_Diagnostic_${item.suffix}.png`);
+            if (index < canvases.length - 1) {
+              await new Promise(resolve => setTimeout(resolve, 800));
+            }
+          }
+
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        } catch (err) {
+          console.error(err);
+          document.querySelectorAll('[id^="ig-slide-export"]').forEach(node => node.remove());
+          alert('Failed to generate images. Please try again.');
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      };
+
+      function renderResults() {
+        app.className = 'diagnostic-app results-mode';
+        const { score, maturity } = state.result;
+        const { top, bottom } = getTopAndBottom(state.answers);
+        const strengths = getStrengths(state.answers);
+        const blockers = getBlockers(state.answers);
+        const improvementAreas = getImprovementAreas(state.answers, blockers);
+        const industryLabel = INDUSTRIES.find(i => i.value === state.industry)?.label || state.industry;
+        const sizeLabel = SIZES.find(s => s.value === state.companySize)?.label || state.companySize;
+        const framing = getFramingSentence(maturity, score);
+        const indicatorPercent = getMaturityIndicatorPercent(maturity);
+        const previewWidth = 1080 * PREVIEW_SCALE;
+        const previewHeight = 1350 * PREVIEW_SCALE;
+        const quickNote = getQuickNote(score, maturity, strengths, improvementAreas);
+
+        const insightItems = [];
+        const primaryStrength = strengths[0] || (top[0]?.score >= 2 ? top[0] : null);
+        if (primaryStrength) {
+          insightItems.push({
+            title: primaryStrength.label,
+            desc: INSIGHT_DESCRIPTIONS[primaryStrength.id]?.strength || "Strong capability in this dimension provides a solid foundation for scaling AI initiatives."
+          });
+        }
+
+        blockers.forEach((blocker, index) => {
+          if (insightItems.length >= 3) return;
+          insightItems.push({
+            title: blocker.label,
+            desc: INSIGHT_DESCRIPTIONS[blocker.id]?.blocker || (index === 0
+              ? "Critical gap in this area creates operational friction that must be addressed to ensure AI success."
+              : "Addressing this constraint will unlock significant efficiency gains and improve overall AI readiness.")
+          });
+        });
+
+        if (insightItems.length < 3) {
+          const secondaryStrength = strengths.find(item => !insightItems.some(insight => insight.title === item.label));
+          if (secondaryStrength) {
+            insightItems.push({ title: secondaryStrength.label, desc: INSIGHT_DESCRIPTIONS[secondaryStrength.id]?.strength || "Solid performance here accelerates your ability to deploy practical AI initiatives." });
+          }
+        }
+
+        app.innerHTML = `
+    <!-- Action Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;">Your AI Readiness Diagnostic Report</h1>
+      <button class="btn-primary" id="btn-download-ig" onclick="window.downloadDiagnosticCards()" style="max-width: 400px; margin: 0 auto;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download Diagnostic Cards (PNG)
+      </button>
+      <div id="download-links-area" style="margin-top: 1.25rem; display: flex; justify-content: center; gap: 1rem; opacity: 0; transition: opacity 0.3s ease;"></div>
+    </div>
+
+    <div class="ig-preview-area" style="display: flex; flex-direction: column; align-items: center; gap: 40px; margin-bottom: 60px; width: 100%;">
+      
+      <!-- Slide 1 Wrapper -->
+      <div class="ig-slide-wrapper" style="width: ${previewWidth}px; height: ${previewHeight}px; max-width: 100%; overflow: auto; display: flex; justify-content: flex-start; background: ${CARD_BG}; padding: 0; border: 1px solid #d8e0e0; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+        <div style="width: 1080px; height: 1350px; flex-shrink: 0; transform: scale(${PREVIEW_SCALE}); transform-origin: top left;">
+        <div id="ig-slide-1" style="width: 1080px; height: 1350px; overflow: hidden; background: ${CARD_BG}; padding: 90px 100px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Inter Tight', sans-serif; color: #111111; position: relative;">
+          
+          <div>
+            <img src="${DIAGNOSTIC_CARD_LOGO}" alt="Aivory" style="height: 60px; width: 290px; object-fit: contain; margin-bottom: 36px;">
+            <h1 style="font-size: 64px; font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 30px; color: #111;">AI Readiness<br>Quick Diagnostic</h1>
+            
+            <div style="border: 2px solid #111; padding: 22px 30px; background: ${CARD_BG}; margin-bottom: 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+              <div style="font-size: 19px; font-weight: 700; color: #111;">Company Name<div style="font-size: 19px; font-weight: 400; color: #333; margin-top: 4px;">${escHtml(state.companyName.trim()) || 'Acme Industry LLC'}</div></div>
+              <div style="font-size: 19px; font-weight: 700; color: #111;">Industry category<div style="font-size: 19px; font-weight: 400; color: #333; margin-top: 4px;">${escHtml(industryLabel)}</div></div>
+              <div style="font-size: 19px; font-weight: 700; color: #111;">Industry Size<div style="font-size: 19px; font-weight: 400; color: #333; margin-top: 4px;">${escHtml(sizeLabel)}</div></div>
+            </div>
+
+            <div style="border: 2px solid #111; padding: 30px 36px 36px; background: ${CARD_BG}; margin-bottom: 24px; position: relative;">
+              <div style="display: inline-block; background: #111; color: #fff; font-family: 'Doto', monospace; font-size: 16px; padding: 6px 16px; border-radius: 9999px; margin-bottom: 24px;">&gt;&gt; ${maturity} &lt;&lt;</div>
+              
+              <div style="display: flex; align-items: center; gap: 40px; margin-bottom: 28px;">
+                <div style="position: relative; width: 160px; height: 160px; flex-shrink: 0;">
+                  <svg width="160" height="160" viewBox="0 0 200 200">
+                    <g transform="translate(100,100)">
+                      ${Array.from({ length: 40 }).map((_, i) => {
+          const angle = (i / 40) * 360;
+          const isRed = (i / 40) * 100 <= score;
+          return `<line x1="0" y1="-90" x2="0" y2="-78" stroke="${isRed ? '#ff5757' : '#cccccc'}" stroke-width="4" transform="rotate(${angle})" />`;
+        }).join('')}
+                    </g>
+                    <circle cx="100" cy="100" r="68" fill="#111111" />
+                  </svg>
+                  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #ffffff;">
+                    <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.8; margin-bottom: -2px;">score</div>
+                    <div style="font-family: 'Doto', monospace; font-size: 50px; font-weight: 700; line-height: 1;">${score}</div>
+                  </div>
+                </div>
+                <div>
+                  <h3 style="font-size: 25px; font-weight: 700; line-height: 1.25; color: #111; margin-bottom: 12px;">${escHtml(quickNote.title)}</h3>
+                  <p style="font-size: 18px; color: #333; line-height: 1.4;">${escHtml(quickNote.body)}</p>
+                </div>
+              </div>
+
+              <div style="margin-top: 14px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                  ${MATURITY_STAGES.map((stage) => {
+          const isActive = stage.toLowerCase() === maturity.toLowerCase();
+          return `
+                      <div style="flex: 1; text-align: center;">
+                        <div style="height: 6px; background: ${isActive ? '#ff5757' : '#111111'}; margin-bottom: 10px; border-radius: 3px;"></div>
+                        <div style="font-size: 15px; font-weight: ${isActive ? '700' : '500'}; color: #111;">${stage}</div>
+                        ${isActive ? `<div style="display: inline-block; background: #111; color: #fff; font-size: 12px; font-style: italic; padding: 3px 8px; border-radius: 6px; margin-top: 5px;">You are here</div>` : `<div style="height: 24px;"></div>`}
+                      </div>
+                    `;
+        }).join('')}
+                </div>
+                <div style="position: relative; height: 36px; margin-top: 8px;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 20px; border-bottom: 2px solid #999; padding-bottom: 4px;">
+                    ${Array.from({ length: 51 }).map((_, i) => `
+                      <div style="width: 2px; height: ${i % 10 === 0 ? '16px' : '8px'}; background: #999;"></div>
+                    `).join('')}
+                  </div>
+                  <div style="position: absolute; top: 0; left: ${indicatorPercent}%; width: 3px; height: 32px; background: #ff5757; transform: translateX(-50%);"></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+              ${[...top, ...bottom].map(d => {
+          let iconChar = '→';
+          let iconColor = '#ffb020';
+          if (d.score >= 2) { iconChar = '↗'; iconColor = '#0ae8af'; }
+          else if (d.score === 0) { iconChar = '↓'; iconColor = '#ff5757'; }
+          return `
+                  <div style="border: 2px solid #111; min-height: 84px; padding: 14px 18px; background: #f8fafa; display: flex; flex-direction: column; justify-content: space-between; border-radius: 8px;">
+                    <div style="font-size: 18px; font-weight: 700; color: #111; text-transform: lowercase;">${d.label}</div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+                      <span style="font-size: 20px; color: ${iconColor}; font-weight: 700;">${iconChar}</span>
+                      <span style="font-family: 'Doto', monospace; font-size: 18px; font-weight: 600; color: #111;">Score ${d.score}/3</span>
+                    </div>
+                  </div>
+                `;
+        }).join('')}
+            </div>
+          </div>
+
+          <div style="margin-top: auto;">
+            <div style="font-size: 20px; font-weight: 500; color: #111; margin-bottom: 20px;">© 2026 Aivory. All rights reserved.</div>
+            <div style="border-top: 2px solid #111; padding-top: 20px; font-size: 20px; font-weight: 500; color: #111;">www.aivory.id</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Slide 2 Wrapper -->
+      <div class="ig-slide-wrapper" style="width: ${previewWidth}px; height: ${previewHeight}px; max-width: 100%; overflow: auto; display: flex; justify-content: flex-start; background: ${CARD_BG}; padding: 0; border: 1px solid #d8e0e0; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+        <div style="width: 1080px; height: 1350px; flex-shrink: 0; transform: scale(${PREVIEW_SCALE}); transform-origin: top left;">
+        <div id="ig-slide-2" style="width: 1080px; height: 1350px; background: ${CARD_BG}; padding: 100px 100px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Inter Tight', sans-serif; color: #111111; position: relative;">
+          
+          <div>
+            <div style="margin-bottom: 50px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding-bottom: 16px; border-bottom: 2px solid #111; font-size: 24px; font-weight: 700; color: #111;">
+                <div>Strength</div>
+                <div>Blocker</div>
+              </div>
+              ${Array.from({ length: Math.max(strengths.length, blockers.length) }).map((_, i) => {
+          const s = strengths[i]?.label || '-';
+          const b = blockers[i]?.label || '-';
+          return `
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 20px 0; border-bottom: 1px solid #111; font-size: 22px; color: #111; font-weight: 500;">
+                    <div>${s}</div>
+                    <div>${b}</div>
+                  </div>
+                `;
+        }).join('')}
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 40px; margin-bottom: 50px;">
+              ${insightItems.map(ins => `
+                <div>
+                  <div style="font-size: 22px; font-weight: 700; color: #111; margin-bottom: 12px;">${ins.title}</div>
+                  <div style="border-bottom: 2px solid #111; margin-bottom: 12px;"></div>
+                  <div style="font-size: 20px; color: #333; line-height: 1.4;">${ins.desc}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div style="margin-bottom: 40px;">
+              <div style="font-size: 22px; font-weight: 700; color: #111; margin-bottom: 12px;">Notes</div>
+              <div style="font-size: 20px; color: #111; line-height: 1.5;">
+                For ${escHtml(state.companyName.trim() || 'your company')}, a score of ${score}/100 shows the foundation is beginning to take shape, but critical gaps remain. Organizations at this stage benefit most from quick wins — choose an AI use case where ROI can be demonstrated in 90 days.
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+              <div style="font-size: 20px; font-weight: 500; color: #111;">© 2026 Aivory. All rights reserved.</div>
+              <div style="text-align: right;">
+                <div style="font-size: 20px; font-weight: 700; color: #111; margin-bottom: 12px;">Diagnose by</div>
+                <img src="${DIAGNOSTIC_CARD_LOGO}" alt="Aivory" style="height: 60px; width: 290px; object-fit: contain;">
+              </div>
+            </div>
+            <div style="border-top: 2px solid #111; padding-top: 20px; font-size: 20px; font-weight: 500; color: #111;">www.aivory.id</div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversion CTA -->
+    <div class="upgrade-section">
+      <div class="upgrade-grid">
+        <div class="upgrade-card">
+          <div class="upgrade-eyebrow">Upgrade path 01</div>
+          <h3>AI Readiness Deep Diagnostic</h3>
+          <div class="upgrade-price">$29 <span>one time</span></div>
+          <p class="upgrade-summary">Move from a quick score to a complete readiness analysis built around your specific use case and not generic.</p>
+          <div class="comparison-note"><strong>Why it beats the free diagnostic:</strong> the free report gives a snapshot. Deep Diagnostic maps 30 data points across workflow maturity, data infrastructure, automation exposure, and organizational readiness.</div>
+          <ul class="cta-features">
+            <li>Detailed gap and constraint analysis</li>
+            <li>Business objective and AI opportunity mapping</li>
+            <li>Data and process readiness breakdown</li>
+            <li>Prioritized use-case recommendations</li>
+          </ul>
+          <a href="index.html#pricing-section" class="btn-cta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-right: 4px;"><path d="M7 7l10 10M17 7v10H7"/></svg>
+            Upgrade to Deep Diagnostic
+          </a>
+        </div>
+
+        <div class="upgrade-card">
+          <div class="upgrade-eyebrow">Best next step</div>
+          <h3>Full Stack Bundle</h3>
+          <div class="upgrade-price">$99 <span>one time</span></div>
+          <p class="upgrade-summary">Get the complete planning stack: Deep Diagnostic + Blueprint + Roadmap in one bundled path.</p>
+          <div class="comparison-note"><strong>Why bundle:</strong> it connects diagnosis to execution, so you do not stop at insights. You get the system design and a phased plan to act on it.</div>
+          <ul class="cta-features">
+            <li>Everything in Deep Diagnostic</li>
+            <li>AI system blueprint and workflow architecture</li>
+            <li>Phased implementation roadmap</li>
+            <li>KPI targets and deployment priorities</li>
+          </ul>
+          <a href="index.html#pricing-section" class="btn-cta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-right: 4px;"><path d="M7 7l10 10M17 7v10H7"/></svg>
+            Get Full Stack Bundle
+          </a>
+        </div>
+      </div>
+
+      <div class="strategy-card">
+        <div class="upgrade-eyebrow">Prefer to talk it through?</div>
+        <h3>Schedule a debrief with an AI strategist</h3>
+        <p>Review your score, clarify what is blocking adoption, and decide whether Deep Diagnostic or the Full Stack Bundle is the right next move.</p>
+        <a href="https://calendly.com" target="_blank" rel="noopener" class="btn-cta">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-right: 4px;"><path d="M7 7l10 10M17 7v10H7"/></svg>
+          Book strategist debrief
+        </a>
+      </div>
+    </div>
+  `;
+      }
+
+      // --- UTILITIES ---
+      function escHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // --- INIT ---
+      render();
+
+    })();
+  </script>
+</body>
+
+</html>

@@ -21,6 +21,8 @@ class LEDHeroBackground {
             rows: 30,
             spacingX: 80,
             spacingZ: 80,
+            centerFadeRadius: 0.28,
+            centerFadeStrength: 0.1,
             waveSpeed: 0.015,
             waveHeight: 120,
             fov: 600,
@@ -140,17 +142,26 @@ class LEDHeroBackground {
             this.ctx.lineCap = 'round';
 
             // Highlight peaks with higher opacity
-            const highlightAlpha = Math.max(0.1, t * 0.8);
+            const highlightAlpha = Math.max(0.13, t * 1.04);
             const finalAlpha = depthAlpha * highlightAlpha;
 
-            this.ctx.strokeStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${finalAlpha})`;
+            const { centerFadeRadius, centerFadeStrength } = this.config;
+            const distFromCenter = Math.abs(screenX - this.canvas.width / 2) / (this.canvas.width / 2);
+            let centerMask = 1;
+            if (distFromCenter < centerFadeRadius) {
+                const t = distFromCenter / centerFadeRadius;
+                centerMask = centerFadeStrength + (1 - centerFadeStrength) * (0.5 - 0.5 * Math.cos(t * Math.PI));
+            }
+            const maskedAlpha = finalAlpha * centerMask * 0.3;
+
+            this.ctx.strokeStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${maskedAlpha})`;
             this.ctx.stroke();
 
             // Draw a tiny bright dot at the top of the bar to simulate LED node
             if (t > 0.5) {
                 this.ctx.beginPath();
                 this.ctx.arc(screenX, screenTopY, thickness * 0.8, 0, Math.PI * 2);
-                this.ctx.fillStyle = `rgba(255, 255, 255, ${finalAlpha * 1.5})`;
+                this.ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${maskedAlpha * 1.5})`;
                 this.ctx.fill();
             }
         }

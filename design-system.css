@@ -151,12 +151,12 @@ body {
 a,
 a:link,
 a:visited {
-    color: #00e59e !important;
+    color: #00e59e;
     text-decoration: underline;
 }
 
 a:hover {
-    color: #00e59e !important;
+    color: #00e59e;
     opacity: 0.8;
     text-decoration: underline;
 }
@@ -451,7 +451,6 @@ textarea:focus-visible {
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: var(--font-weight-light);
-    color: var(--text-primary);
 }
 
 h1 {
@@ -470,7 +469,6 @@ h3 {
 }
 
 p {
-    color: var(--text-secondary);
     line-height: 1.6;
 }
 

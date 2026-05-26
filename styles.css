@@ -82,7 +82,7 @@ a:hover {
     font-family: 'Inter Tight', sans-serif;
     font-size: 1rem;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: #ffffff !important;
     text-decoration: none !important;
     transition: all 0.2s ease;
     cursor: pointer;
@@ -201,7 +201,7 @@ a:hover {
 }
 
 .hero-title {
-    font-size: 2.767923rem;
+    font-size: 1.9375rem;
     margin-bottom: 1.25rem;
     font-weight: 300;
     font-family: 'Inter Tight', sans-serif;
@@ -222,7 +222,7 @@ a:hover {
 }
 
 .hero-subline {
-    font-size: 1.125rem;
+    font-size: 0.7875rem;
     margin-bottom: 2.5rem;
     color: rgba(255, 255, 255, 0.75);
     font-weight: 300;
@@ -698,9 +698,9 @@ a:hover {
 
 /* Updated button hover effects - v2 */
 .card-button:hover {
-    background: #07d197 !important;
-    border-color: #07d197 !important;
-    color: #0a0a0a !important;
+    background: var(--mint-green);
+    border-color: var(--mint-green);
+    color: #0a0a0a;
 }
 
 /* ============================================================================
@@ -1791,12 +1791,12 @@ a:hover {
     }
 
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.4rem;
         margin-bottom: 1rem;
     }
 
     .hero-subline {
-        font-size: 1rem;
+        font-size: 0.7rem;
         margin-bottom: 2rem;
     }
 
@@ -2308,6 +2308,42 @@ a:hover {
     margin-bottom: 2rem;
 }
 
+.diagnostic-container {
+    background: #0a0a0a;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 2rem auto;
+    max-width: 800px;
+    position: relative;
+}
+
+.close-diagnostic {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-diagnostic:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
 .question-text {
     font-size: 1.5rem;
     color: white;
@@ -2341,8 +2377,8 @@ a:hover {
 }
 
 .option-label.selected {
-    border-color: #0abc89;
-    background: rgba(10, 188, 137, 0.15);
+    border-color: var(--mint-green);
+    background: rgba(10, 232, 175, 0.15);
 }
 
 .option-label input[type="radio"],
