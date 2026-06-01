@@ -645,7 +645,7 @@
         }
 
         .nav-brand img {
-            height: 40px;
+            height: 34px;
             width: auto;
             object-fit: contain;
         }
@@ -5734,26 +5734,81 @@
     <section id="homepage" class="section active" style="padding: 0;">
         <div class="hero relative w-full min-h-screen flex flex-col items-center justify-center"
             style="background: #030408;">
-            <canvas id="led-hero-bg" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
-            <!-- 
             <video id="hero-video-bg" autoplay muted loop playsinline preload="auto">
-                <source src="hero-video/hero-bg-optimized.mp4" type="video/mp4">
+                <source src="hero-video/Hero_Video.mp4" type="video/mp4">
             </video>
             <script>
             (function(){var v=document.getElementById('hero-video-bg');if(v){v.play().catch(function(){});v.addEventListener('canplay',function(){v.play().catch(function(){});});}})();
             </script>
-            -->
+            <!-- Grid Overlay with random fade -->
+            <canvas id="hero-grid-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:0.7;"></canvas>
+            <script>
+            (function(){
+                var c=document.getElementById('hero-grid-overlay');
+                if(!c)return;
+                var ctx=c.getContext('2d');
+                var cols=5,rows=8;
+                var cells=[];
+                function resize(){c.width=c.offsetWidth;c.height=c.offsetHeight;}
+                resize();
+                window.addEventListener('resize',resize);
+                for(var i=0;i<cols*rows;i++){cells.push({opacity:0,target:0,speed:0.02+Math.random()*0.03});}
+                // Lock 1 cell behind button (center col 2, row 5 in 5x8 grid)
+                var lockedCell=5*cols+2;
+                cells[lockedCell].opacity=1;cells[lockedCell].target=1;cells[lockedCell].speed=0;
+                // All cells flicker uniformly except the locked one
+                function pickTargets(){
+                    for(var i=0;i<cells.length;i++){
+                        if(i===lockedCell)continue;
+                        cells[i].target=Math.random()<0.5?0:0.6+Math.random()*0.4;
+                    }
+                }
+                setInterval(pickTargets,170);
+                function draw(){
+                    ctx.clearRect(0,0,c.width,c.height);
+                    var cw=c.width/cols,ch=c.height/rows;
+                    for(var i=0;i<cells.length;i++){
+                        var cell=cells[i];
+                        if(cell.opacity<cell.target){cell.opacity=Math.min(cell.opacity+cell.speed,cell.target);}
+                        else if(cell.opacity>cell.target){cell.opacity=Math.max(cell.opacity-cell.speed,cell.target);}
+                        if(cell.opacity>0.01){
+                            var col=i%cols,row=Math.floor(i/cols);
+                            ctx.fillStyle='rgba(0,0,0,'+cell.opacity+')';
+                            ctx.fillRect(col*cw,row*ch,cw,ch);
+                        }
+                    }
+                    // Draw grid lines
+                    ctx.strokeStyle='rgba(255,255,255,0.08)';
+                    ctx.lineWidth=1;
+                    for(var x=0;x<=cols;x++){ctx.beginPath();ctx.moveTo(x*cw,0);ctx.lineTo(x*cw,c.height);ctx.stroke();}
+                    for(var y=0;y<=rows;y++){ctx.beginPath();ctx.moveTo(0,y*ch);ctx.lineTo(c.width,y*ch);ctx.stroke();}
+                    // Draw cross markers at intersections
+                    ctx.strokeStyle='rgba(255,255,255,0.25)';
+                    ctx.lineWidth=1;
+                    var cs=4;
+                    for(var x=0;x<=cols;x++){for(var y=0;y<=rows;y++){
+                        var px=x*cw,py=y*ch;
+                        ctx.beginPath();ctx.moveTo(px-cs,py);ctx.lineTo(px+cs,py);ctx.stroke();
+                        ctx.beginPath();ctx.moveTo(px,py-cs);ctx.lineTo(px,py+cs);ctx.stroke();
+                    }}
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            })();
+            </script>
             <div class="relative z-10 flex flex-col items-center justify-center text-center w-full max-w-4xl"
                 style="padding: 6rem 2rem;">
                 <h1 class="text-[33.6px] md:text-[50.4px] font-normal mb-4 tracking-tight text-white/90 text-center"
                     style="font-family: 'Manrope', sans-serif;">
                     Make AI make sense<span class="text-aivory-accent">.</span>
                 </h1>
-                <h2 class="text-[21px] md:text-[33.6px] font-normal text-[#57ffdf] text-center w-full mb-12 leading-tight"
-                    style="font-family: 'Manrope', sans-serif;">
-                    Start with clarity.<br>
-                    End with a system that runs.
-                </h2>
+                <!-- Rotating Hero Subheadline -->
+                <div id="hero-rotating-container" style="position: relative; height: 5.5rem; overflow: hidden; width: 100%; margin-bottom: 3rem;">
+                    <p id="hero-rotating-text" class="text-[21px] md:text-[33.6px] font-normal text-[#57ffdf] text-center w-full leading-tight"
+                        style="font-family: 'Manrope', sans-serif; position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); margin: 0; transition: opacity 0.5s ease-out, transform 0.5s ease-out;">
+                        Start with clarity.<br>End with a system that runs.
+                    </p>
+                </div>
 
                 <a href="free-diagnostic.html" class="hero-diagnostic-btn"
                     style="display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1.25rem; border: 1px solid rgba(255,255,255,0.6); background: transparent; color: white; text-decoration: none; font-family: 'Manrope', sans-serif; font-weight: 300; font-size: 0.625rem; letter-spacing: 0.12em; text-transform: uppercase; transition: all 0.25s ease; cursor: pointer;"
@@ -5767,291 +5822,235 @@
         </div>
 
         <!-- Features Grid Section -->
-        <link
-            href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Doto:wght@400;700;900&display=swap"
-            rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Doto:wght@400;700;900&display=swap" rel="stylesheet">
         <style>
             @media not all and (prefers-reduced-motion) {
-                @keyframes fc-pulse {
-
-                    0%,
-                    100% {
-                        opacity: 0.8;
-                    }
-
-                    50% {
-                        opacity: 0.2;
-                    }
-                }
-
-                @keyframes fc-barGrow {
-                    from {
-                        width: 0;
-                        opacity: 0.3
-                    }
-
-                    to {
-                        width: var(--fc-w);
-                        opacity: 1
-                    }
-                }
-
-                @keyframes fc-fadeLabel {
-
-                    0%,
-                    40% {
-                        opacity: 0
-                    }
-
-                    60%,
-                    100% {
-                        opacity: 1
-                    }
-                }
-
-                @keyframes fc-nodePulse {
-
-                    0%,
-                    100% {
-                        transform: scale(1)
-                    }
-
-                    50% {
-                        transform: scale(1.02)
-                    }
-                }
-
-                @keyframes fc-fadeSlide {
-                    from {
-                        opacity: 0;
-                        transform: translateX(8px)
-                    }
-
-                    to {
-                        opacity: 1;
-                        transform: translateX(0)
-                    }
-                }
-
-                @keyframes fc-agentBreath {
-
-                    0%,
-                    100% {
-                        opacity: 1
-                    }
-
-                    50% {
-                        opacity: 0.85
-                    }
-                }
-
-                @keyframes fc-blink {
-
-                    0%,
-                    100% {
-                        opacity: .3
-                    }
-
-                    50% {
-                        opacity: 1
-                    }
-                }
-
-                @keyframes fc-lineFlow {
-                    from {
-                        stroke-dashoffset: 20
-                    }
-
-                    to {
-                        stroke-dashoffset: 0
-                    }
-                }
-
-                @keyframes fc-arrowRed {
-
-                    0%,
-                    80% {
-                        color: #222
-                    }
-
-                    85%,
-                    95% {
-                        color: #e63946
-                    }
-
-                    100% {
-                        color: #222
-                    }
-                }
+                @keyframes fc-pulse {0%,100% { opacity: 0.8; } 50% { opacity: 0.2; }}
+                @keyframes fc-barGrow { from{width:0;opacity:0.3} to{width:var(--fc-w);opacity:1} }
+                @keyframes fc-fadeLabel { 0%,40%{opacity:0} 60%,100%{opacity:1} }
+                @keyframes fc-nodePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
+                @keyframes fc-fadeSlide { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:translateX(0)} }
+                @keyframes fc-agentBreath { 0%,100%{opacity:1} 50%{opacity:0.85} }
+                @keyframes fc-blink { 0%,100%{opacity:.3} 50%{opacity:1} }
+                @keyframes fc-lineFlow { from{stroke-dashoffset:20} to{stroke-dashoffset:0} }
+                @keyframes fc-arrowRed { 0%,80%{color:#222} 85%,95%{color:#e63946} 100%{color:#222} }
             }
 
-            .fc-section {
-                background: #05070b !important;
-                color: #fff;
-                --fc-outline-color: rgba(255, 255, 255, 0.22);
-                --fc-outline-width: 0.5px;
-                --fc-svg-outline-width: 0.5;
-                --fc-connector-color: rgba(255, 255, 255, 0.7);
+            .gsap-card svg :not(text)[fill="#fff"],
+            .gsap-card svg :not(text)[fill="#FFFFFF"] { fill: rgba(255,255,255,0.08); }
+            .gsap-card svg :not(text)[fill="#ddd"],
+            .gsap-card svg :not(text)[fill="#bbb"] { fill: rgba(255,255,255,0.15); }
+            .gsap-card svg [stroke="#222"],
+            .gsap-card svg [stroke="#111"],
+            .gsap-card svg [stroke="#333"],
+            .gsap-card svg [stroke="#DDD"],
+            .gsap-card svg [stroke="#CCC"],
+            .gsap-card svg [stroke="#ccc"],
+            .gsap-card svg [stroke="#E8E8E8"] { stroke: rgba(255,255,255,0.15); }
+            .gsap-card svg path[stroke]:not([stroke="#0ae8af"]) { stroke: rgba(255,255,255,0.15); }
+            .gsap-card svg text:not(.fc-blueprint-label) { fill: rgba(255,255,255,0.7); }
+            .gsap-card svg .fc-blueprint-label { fill: rgba(255,255,255,0.9); }
+            .gsap-card [style*="background:#fff"],
+            .gsap-card [style*="background: #fff"],
+            .gsap-card [style*="background:#FFFFFF"],
+            .gsap-card [style*="background: #FFFFFF"] { background: rgba(255,255,255,0.06) !important; }
+            .gsap-card [style*="border:1px solid"] { border-color: rgba(255,255,255,0.12) !important; }
+            .gsap-card [style*="color:#333"],
+            .gsap-card [style*="color:#555"] { color: rgba(255,255,255,0.6) !important; }
+            .gsap-card .agent-hub { animation: agentPulse 2.5s ease-in-out infinite; }
+            @keyframes agentPulse {
+                0%,100% { box-shadow: 0 0 0 0 rgba(10, 232, 175, 0.4) }
+                50% { box-shadow: 0 0 0 8px rgba(10, 232, 175, 0) }
             }
 
-            .fc-section * {
-                box-sizing: border-box;
+            #features {
+                position: relative;
+                z-index: 1; /* Guarantees strict stacking scope for the entire section */
             }
 
-            .fc-section h2,
-            .fc-section p,
-            .fc-section .fc-card-text,
-            .fc-section .fc-card-text *,
-            .fc-section .fc-card-visual,
-            .fc-section .fc-card-visual * {
-                color: #fff !important;
+            .gsap-card-container {
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                padding-bottom: 40px;
+                margin-top: 80px; /* Perfect gap below the title */
+                isolation: isolate; 
             }
 
-            .fc-section [style*="background:#fff"],
-            .fc-section [style*="background: #fff"],
-            .fc-section [style*="background:#FFFFFF"],
-            .fc-section [style*="background: #FFFFFF"] {
-                background: #101820 !important;
-            }
-
-            .fc-section [style*="border:1px solid"] {
-                border-color: var(--fc-outline-color) !important;
-                border-width: var(--fc-outline-width) !important;
-            }
-
-            .fc-section svg :not(text)[fill="#fff"],
-            .fc-section svg :not(text)[fill="#FFFFFF"] {
-                fill: #101820 !important;
-            }
-
-            .fc-section svg :not(text)[fill="#ddd"],
-            .fc-section svg :not(text)[fill="#bbb"] {
-                fill: rgba(255, 255, 255, 0.4) !important;
-            }
-
-            .fc-section svg [stroke="#222"],
-            .fc-section svg [stroke="#111"],
-            .fc-section svg [stroke="#333"],
-            .fc-section svg [stroke="#DDD"],
-            .fc-section svg [stroke="#CCC"],
-            .fc-section svg [stroke="#ccc"],
-            .fc-section svg [stroke="#E8E8E8"] {
-                stroke: var(--fc-outline-color) !important;
-                stroke-width: var(--fc-svg-outline-width) !important;
-            }
-
-            .fc-section svg path[stroke]:not([stroke="#0ae8af"]) {
-                stroke: var(--fc-connector-color) !important;
-            }
-
-            .fc-section svg line[stroke="#0ae8af"],
-            .fc-section svg .agent-line {
-                stroke: #0ae8af !important;
-            }
-
-            .fc-section svg text:not(.fc-blueprint-label) {
-                fill: #fff !important;
-            }
-
-            .fc-section svg .fc-blueprint-label {
-                fill: #fff;
-            }
-
-            .fc-card-v {
+            .gsap-card {
+                position: sticky;
+                top: 12vh;
+                border-radius: 32px;
+                min-height: 520px;
+                margin-bottom: 80px;
+                overflow: hidden;
+                will-change: transform;
+                transform-origin: center top;
+                border: 1px solid rgba(255,255,255,0.06);
+                box-shadow: 0 -20px 50px rgba(0,0,0,0.6);
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 0;
-                border: none;
-                border-radius: 0;
-                background: #0b1016;
-                overflow: hidden;
-                box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+                opacity: 0;
+                transform: translateY(40px);
+                transition: opacity 0.6s ease, transform 0.6s ease;
+                background: linear-gradient(135deg, #15171c 0%, #05070b 100%);
             }
 
-            .fc-card-v:hover .fc-anim {
-                animation-play-state: paused !important;
+            .gsap-card.animate {
+                opacity: 1;
+                transform: translateY(0);
             }
 
-            .fc-card-text {
-                padding: 40px 36px;
+            .gsap-card-text-area {
+                padding: 64px 48px 64px 80px; 
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
+                align-items: flex-start;
+                text-align: left;
             }
 
-            .fc-card-visual {
-                background: #06090d;
+            .gsap-card-visual-area {
+                padding: 48px; 
                 display: flex;
-                align-items: center;
                 justify-content: center;
-                min-height: 200px;
-                padding: 24px;
+                align-items: center;
             }
 
-            .fc-step-v {
-                font-size: 11px;
-                font-weight: 700;
+            .gsap-card .fc-step-v {
+                display: inline-block;
+                font-size: 13px; 
+                font-weight: 600;
+                letter-spacing: 0.12em;
                 text-transform: uppercase;
-                letter-spacing: 0.1em;
-                color: #fff;
-                margin-bottom: 12px;
+                color: #0ae8af;
+                margin-bottom: 20px;
                 font-family: 'Manrope', sans-serif;
             }
 
-            .fc-title-v {
-                font-size: 22px;
-                font-weight: 800;
+            .gsap-card .fc-title-v {
+                font-size: 44px; 
+                font-weight: 300;
                 color: #fff;
-                margin-bottom: 12px;
+                margin-bottom: 24px;
                 font-family: 'Manrope', sans-serif;
-                line-height: 1.2;
+                line-height: 1.15;
+                text-align: left;
+                width: 100%;
             }
 
-            .fc-desc-v {
-                font-size: 14px;
+            .gsap-card .fc-desc-v {
+                font-size: 17px; 
                 font-weight: 400;
-                color: #fff;
-                line-height: 1.6;
+                color: rgba(255,255,255,0.65);
+                line-height: 1.7;
                 font-family: 'Manrope', sans-serif;
+                text-align: left;
+                width: 100%;
+                /* REMOVED white-space: pre-wrap; so it aligns flawlessly without being impacted by literal HTML source tabs/spaces */
             }
 
-            @media (max-width:768px) {
-                .fc-card-v {
+            @media (max-width: 1024px) {
+                .gsap-card {
                     grid-template-columns: 1fr;
+                    min-height: auto;
+                    border-radius: 24px;
+                    top: 15vh;
                 }
-
-                .fc-card-text {
-                    padding: 28px 24px;
-                }
-
-                .fc-card-visual {
-                    min-height: 160px;
-                }
+                .gsap-card-text-area { padding: 40px 32px 24px; align-items: center; text-align: center; }
+                .gsap-card .fc-title-v, .gsap-card .fc-desc-v { text-align: center; }
+                .gsap-card-visual-area { padding: 24px 32px 40px; min-height: 200px; }
             }
         </style>
-        <div class="w-full py-24 fc-section" style="background:#05070b;" id="features">
-            <div style="max-width:960px;margin:0 auto;padding:0 24px;">
-                <div style="margin-bottom:56px;">
-                    <h2
-                        style="font-size:3rem;font-weight:700;color:#fff;margin-bottom:12px;font-family:'Manrope',sans-serif;line-height:1.15;letter-spacing:-0.02em;">
-                        From knowing where you stand<br>to running AI that works.</h2>
-                    <p
-                        style="font-size:1.25rem;color:#fff;font-family:'Manrope',sans-serif;font-weight: 300;line-height:1.6;">
-                        Every tool you need. In the order you need it.</p>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:24px;">
 
-                    <!-- Card 1: Deep Diagnostic -->
-                    <div class="fc-card-v" data-fc-observe>
-                        <div class="fc-card-text">
-                            <span class="fc-step-v">Step 1</span>
+        <!-- AI Ready Section -->
+        <div class="w-full py-24" style="background:#05070b;position:relative;overflow:hidden;">
+            <canvas id="ai-ready-grid-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.45;"></canvas>
+            <div style="max-width:1160px;margin:0 auto;padding:0 24px;position:relative;z-index:1;">
+                <div style="text-align:left;">
+                    <h2 style="font-size:3.5rem;font-weight:500;color:#fff;margin-bottom:12px;font-family:'Manrope',sans-serif;line-height:1.15;letter-spacing:-0.02em;">
+                        AI is ready. The question is, are you?</h2>
+                    <p style="font-size:1.25rem;color:#b2b2b2;font-family:'Manrope',sans-serif;font-weight:300;line-height:1.6;max-width:720px;">
+                        Aivory takes you from &ldquo;where do we even start?&rdquo; to AI that&rsquo;s actually running in your business. One place, one clear plan, from day one.</p>
+                    <p style="font-size:1.25rem;color:#b2b2b2;font-family:'Manrope',sans-serif;font-weight:300;line-height:1.6;max-width:720px;margin-top:24px;">
+                        That&rsquo;s what it means to make AI make sense! Not just understanding it, but having it work for your business, end to end.</p>
+                    <p style="font-size:1.25rem;color:#fff;font-family:'Manrope',sans-serif;font-weight:800;line-height:1.6;max-width:720px;margin-top:24px;white-space:nowrap;">
+                        No guesswork. No wasted budget. No hidden cost. Just a clear path forward.</p>
+                </div>
+            </div>
+            <script>
+            (function(){
+                var c=document.getElementById('ai-ready-grid-overlay');
+                if(!c)return;
+                var ctx=c.getContext('2d');
+                var cols=5,rows=8;
+                var cells=[];
+                function resize(){c.width=c.offsetWidth;c.height=c.offsetHeight;}
+                resize();
+                window.addEventListener('resize',resize);
+                for(var i=0;i<cols*rows;i++){cells.push({opacity:0,target:0,speed:0.015+Math.random()*0.025});}
+                function pickTargets(){
+                    for(var i=0;i<cells.length;i++){
+                        cells[i].target=Math.random()<0.6?0:0.4+Math.random()*0.3;
+                    }
+                }
+                setInterval(pickTargets,200);
+                function draw(){
+                    ctx.clearRect(0,0,c.width,c.height);
+                    var cw=c.width/cols,ch=c.height/rows;
+                    for(var i=0;i<cells.length;i++){
+                        var cell=cells[i];
+                        if(cell.opacity<cell.target){cell.opacity=Math.min(cell.opacity+cell.speed,cell.target);}
+                        else if(cell.opacity>cell.target){cell.opacity=Math.max(cell.opacity-cell.speed,cell.target);}
+                        if(cell.opacity>0.01){
+                            var col=i%cols,row=Math.floor(i/cols);
+                            ctx.fillStyle='rgba(25,25,25,'+cell.opacity+')';
+                            ctx.fillRect(col*cw,row*ch,cw,ch);
+                        }
+                    }
+                    ctx.strokeStyle='rgba(255,255,255,0.08)';
+                    ctx.lineWidth=1;
+                    for(var x=0;x<=cols;x++){ctx.beginPath();ctx.moveTo(x*cw,0);ctx.lineTo(x*cw,c.height);ctx.stroke();}
+                    for(var y=0;y<=rows;y++){ctx.beginPath();ctx.moveTo(0,y*ch);ctx.lineTo(c.width,y*ch);ctx.stroke();}
+                    ctx.strokeStyle='rgba(255,255,255,0.25)';
+                    ctx.lineWidth=1;
+                    var cs=4;
+                    for(var x=0;x<=cols;x++){for(var y=0;y<=rows;y++){
+                        var px=x*cw,py=y*ch;
+                        ctx.beginPath();ctx.moveTo(px-cs,py);ctx.lineTo(px+cs,py);ctx.stroke();
+                        ctx.beginPath();ctx.moveTo(px,py-cs);ctx.lineTo(px,py+cs);ctx.stroke();
+                    }}
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            })();
+            </script>
+        </div>
+
+        <div class="w-full py-24" style="background:#05070b;position:relative;" id="features">
+            <canvas id="ai-execution-grid-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.4;"></canvas>
+            <div style="max-width:1160px;margin:0 auto;padding:0 24px;position:relative;z-index:1;">
+                
+                <div style="margin-bottom: 20px;">
+                    <h2 style="font-size:3.5rem;font-weight:500;color:#fff;margin-bottom:12px;font-family:'Manrope',sans-serif;line-height:1.15;letter-spacing:-0.02em;">
+                        Turn your AI Confusion<br>Into AI Execution</h2>
+                    <p style="font-size:1.25rem;color:#b2b2b2;font-family:'Manrope',sans-serif;font-weight: 300;line-height:1.6;">
+                        Aivory helps organizations discover where AI creates value,<br>design the right systems, and deploy AI with confidence</p>
+                </div>
+
+                <div class="gsap-card-container">
+
+                    <!-- Card 1: AI Readiness Deep Diagnostic -->
+                    <div class="gsap-card" style="z-index: 1;">
+                        <div class="gsap-card-text-area">
+                            <span class="fc-step-v">DISCOVER</span>
                             <div class="fc-title-v">AI Readiness Deep Diagnostic</div>
                             <div class="fc-desc-v">Not a generic quiz. A structured multi-phase analysis across your
                                 business objective, data readiness, and constraints — so you know exactly where you
                                 stand before building anything.</div>
                         </div>
-                        <div class="fc-card-visual">
-                            <svg width="380" height="160" viewBox="0 0 380 160" fill="none" style="max-width:100%;">
+                        <div class="gsap-card-visual-area">
+<svg width="380" height="160" viewBox="0 0 380 160" fill="none" style="max-width:100%;">
                                 <!-- 4 labeled boxes on the left -->
                                 <rect x="8" y="8" width="130" height="28" fill="#fff" stroke="#222"
                                     stroke-width="0.8" />
@@ -6185,17 +6184,17 @@
                         </div>
                     </div>
 
-                    <!-- Card 2: AI Blueprint -->
-                    <div class="fc-card-v" data-fc-observe>
-                        <div class="fc-card-text">
-                            <span class="fc-step-v">Step 2</span>
+                    <!-- Card 2: AI System Blueprint -->
+                    <div class="gsap-card" style="z-index: 2;">
+                        <div class="gsap-card-text-area">
+                            <span class="fc-step-v">DESIGN</span>
                             <div class="fc-title-v">AI System Blueprint</div>
                             <div class="fc-desc-v">Aivory turns your diagnostic into a readiness score with KPI targets
                                 and a recommended AI architecture built specifically for your business — your score,
                                 your gaps, your next move.</div>
                         </div>
-                        <div class="fc-card-visual">
-                            <svg width="380" height="140" viewBox="0 0 380 140" fill="none" style="max-width:100%;">
+                        <div class="gsap-card-visual-area">
+<svg width="380" height="140" viewBox="0 0 380 140" fill="none" style="max-width:100%;">
                                 <!-- Left box: Deep Diagnostic Score -->
                                 <rect x="8" y="50" width="90" height="40" fill="#fff" stroke="#222"
                                     stroke-width="0.8" />
@@ -6271,16 +6270,16 @@
                     </div>
 
                     <!-- Card 3: AI Roadmap -->
-                    <div class="fc-card-v" data-fc-observe>
-                        <div class="fc-card-text">
-                            <span class="fc-step-v">Step 3</span>
+                    <div class="gsap-card" style="z-index: 3;">
+                        <div class="gsap-card-text-area">
+                            <span class="fc-step-v">PLAN</span>
                             <div class="fc-title-v">AI Roadmap</div>
                             <div class="fc-desc-v">Month by month. Milestone by milestone. With KPI targets and
                                 sequenced actions so your team knows exactly what to do next — a plan built to be
                                 executed, not just presented.</div>
                         </div>
-                        <div class="fc-card-visual">
-                            <svg width="380" height="160" viewBox="0 0 380 160" fill="none" style="max-width:100%;">
+                        <div class="gsap-card-visual-area">
+<svg width="380" height="160" viewBox="0 0 380 160" fill="none" style="max-width:100%;">
                                 <!-- Left box: ROADMAP -->
                                 <rect x="8" y="55" width="100" height="40" rx="18" fill="#181818" stroke="#444"
                                     stroke-width="0.8" />
@@ -6329,16 +6328,16 @@
                     </div>
 
                     <!-- Card 4: Workflow Builder -->
-                    <div class="fc-card-v" data-fc-observe>
-                        <div class="fc-card-text">
-                            <span class="fc-step-v">Operate</span>
+                    <div class="gsap-card" style="z-index: 4;">
+                        <div class="gsap-card-text-area">
+                            <span class="fc-step-v">BUILD</span>
                             <div class="fc-title-v">Workflow Builder</div>
                             <div class="fc-desc-v">Tell the builder what you want to automate in plain language. It
                                 generates the entire flow, connects your tools, and outputs it ready to export or deploy
                                 — no coding required.</div>
                         </div>
-                        <div class="fc-card-visual">
-                            <style>
+                        <div class="gsap-card-visual-area">
+<style>
                                 @keyframes wfTypeText {
 
                                     0%,
@@ -6538,16 +6537,16 @@
                     </div>
 
                     <!-- Card 5: AI Agent -->
-                    <div class="fc-card-v" data-fc-observe>
-                        <div class="fc-card-text">
-                            <span class="fc-step-v">Operate</span>
+                    <div class="gsap-card" style="z-index: 5;">
+                        <div class="gsap-card-text-area">
+                            <span class="fc-step-v">DEPLOY</span>
                             <div class="fc-title-v">AI Agent</div>
                             <div class="fc-desc-v">Purpose-built agents for email, customer service, sales, and more.
                                 Deploy to Telegram, Slack, or wherever your team works — the right agent, everywhere you
                                 need it.</div>
                         </div>
-                        <div class="fc-card-visual">
-                            <style>
+                        <div class="gsap-card-visual-area">
+<style>
                                 @keyframes agentPulse {
 
                                     0%,
@@ -6656,17 +6655,17 @@
                         </div>
                     </div>
 
-                    <!-- Card 6: Template Library -->
-                    <div class="fc-card-v" data-fc-observe>
-                        <div class="fc-card-text">
-                            <span class="fc-step-v">Operate</span>
+                    <!-- Card 6: Automation Template Library -->
+                    <div class="gsap-card" style="z-index: 6;">
+                        <div class="gsap-card-text-area">
+                            <span class="fc-step-v">ACCELERATE</span>
                             <div class="fc-title-v">Automation Template Library</div>
-                            <div class="fc-desc-v">Browse 50+ pre-built automation templates across email, sales,
-                                support, and more. Pick one, make it yours, and deploy without starting from a blank
-                                canvas.</div>
+                            <div class="fc-desc-v">Start with proven workflows instead of building from scratch.
+                                
+                                Choose from a growing library of ready-to-use automations for sales, operations, support, marketing, and more—then customize them to fit your business.</div>
                         </div>
-                        <div class="fc-card-visual" style="position:relative;">
-                            <!-- 50+ templates badge -->
+                        <div class="gsap-card-visual-area">
+<!-- 50+ templates badge -->
                             <span
                                 style="position:absolute;top:12px;right:12px;background:#111;color:#0ae8af;font-size:10px;font-weight: 300;padding:4px 10px;font-family:'Manrope',sans-serif;">50+</span>
                             <!-- 3x2 grid of mini template cards -->
@@ -6745,34 +6744,68 @@
 
                 </div>
             </div>
+            <script>
+            (function(){
+                var c=document.getElementById('ai-execution-grid-overlay');
+                if(!c)return;
+                var ctx=c.getContext('2d');
+                var cols=5,rows=8;
+                var cells=[];
+                function resize(){c.width=c.offsetWidth;c.height=c.offsetHeight;}
+                resize();
+                window.addEventListener('resize',resize);
+                for(var i=0;i<cols*rows;i++){cells.push({opacity:0,target:0,speed:0.012+Math.random()*0.02});}
+                function pickTargets(){
+                    for(var i=0;i<cells.length;i++){
+                        cells[i].target=Math.random()<0.65?0:0.35+Math.random()*0.3;
+                    }
+                }
+                setInterval(pickTargets,220);
+                function draw(){
+                    ctx.clearRect(0,0,c.width,c.height);
+                    var cw=c.width/cols,ch=c.height/rows;
+                    for(var i=0;i<cells.length;i++){
+                        var cell=cells[i];
+                        if(cell.opacity<cell.target){cell.opacity=Math.min(cell.opacity+cell.speed,cell.target);}
+                        else if(cell.opacity>cell.target){cell.opacity=Math.max(cell.opacity-cell.speed,cell.target);}
+                        if(cell.opacity>0.01){
+                            var col=i%cols,row=Math.floor(i/cols);
+                            ctx.fillStyle='rgba(25,25,25,'+cell.opacity+')';
+                            ctx.fillRect(col*cw,row*ch,cw,ch);
+                        }
+                    }
+                    ctx.strokeStyle='rgba(255,255,255,0.08)';
+                    ctx.lineWidth=1;
+                    for(var x=0;x<=cols;x++){ctx.beginPath();ctx.moveTo(x*cw,0);ctx.lineTo(x*cw,c.height);ctx.stroke();}
+                    for(var y=0;y<=rows;y++){ctx.beginPath();ctx.moveTo(0,y*ch);ctx.lineTo(c.width,y*ch);ctx.stroke();}
+                    ctx.strokeStyle='rgba(255,255,255,0.25)';
+                    ctx.lineWidth=1;
+                    var cs=4;
+                    for(var x=0;x<=cols;x++){for(var y=0;y<=rows;y++){
+                        var px=x*cw,py=y*ch;
+                        ctx.beginPath();ctx.moveTo(px-cs,py);ctx.lineTo(px+cs,py);ctx.stroke();
+                        ctx.beginPath();ctx.moveTo(px,py-cs);ctx.lineTo(px,py+cs);ctx.stroke();
+                    }}
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            })();
+            </script>
         </div>
-        <script>
-                (function () {
-                    var obs = new IntersectionObserver(function (entries) {
-                        entries.forEach(function (e) {
-                            var anims = e.target.querySelectorAll('.fc-anim');
-                            anims.forEach(function (a) {
-                                a.style.animationPlayState = e.isIntersecting ? 'running' : 'paused';
-                            });
-                        });
-                    }, { threshold: 0.2 });
-                    document.querySelectorAll('[data-fc-observe]').forEach(function (el) { obs.observe(el); });
-                })();
-        </script>
+
 
 
         <!-- AI System Lifecycle Section -->
         <div class="w-full bg-white text-black py-24 font-sans" id="pricing-section">
             <div class="max-w-7xl mx-auto px-6 md:px-12">
                 <div class="mb-20 text-center md:text-left">
-                    <h2 class="text-5xl md:text-6xl font-bold tracking-tight mb-6">Your AI system starts here.</h2>
-                    <p class="text-xl text-gray-700 font-medium leading-relaxed">
-                        Three steps. One system. No guesswork.<br>
-                        Pay once. Own the output. No subscription required.
+                    <h2 class="text-5xl md:text-6xl font-medium tracking-tight mb-6">Start With Clarity.</h2>
+                    <p class="text-xl text-gray-700 font-light leading-relaxed">
+                        Know what to build, why it matters, and how to make it work.
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-16 mb-20">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-16 mb-20 items-stretch">
                     <!-- Step 1 -->
                     <div class="flex flex-col">
                         <div class="flex items-start gap-4 mb-4 border-b-2 border-black pb-4">
@@ -6803,7 +6836,7 @@
                                 & process readiness</li>
                         </ul>
                         <button onclick="startFreeDiagnostic()"
-                            class="group flex items-center justify-center gap-3 text-black font-bold text-xl hover:text-gray-600 transition-colors mt-8 w-full border-t-2 border-black pt-6">
+                            class="group flex items-center justify-center gap-3 text-black font-bold text-xl hover:text-gray-600 transition-colors mt-auto w-full border-t-2 border-black pt-6">
                             <svg class="w-5 h-5 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M17 7v10H7" />
@@ -6845,7 +6878,7 @@
                                 targets per phase</li>
                         </ul>
                         <button onclick="startBlueprint()"
-                            class="group flex items-center justify-center gap-3 text-black font-bold text-xl hover:text-gray-600 transition-colors mt-8 w-full border-t-2 border-black pt-6">
+                            class="group flex items-center justify-center gap-3 text-black font-bold text-xl hover:text-gray-600 transition-colors mt-auto w-full border-t-2 border-black pt-6">
                             <svg class="w-5 h-5 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M17 7v10H7" />
@@ -6863,54 +6896,30 @@
                                 <path d="M7 7h10v10" />
                                 <path d="M7 17L17 7" />
                             </svg>
-                            <h3 class="text-lg font-bold leading-snug">Deploy & Operate<br>your AI systems</h3>
+                            <div>
+                                <h3 class="text-lg font-bold leading-snug">Full Stack</h3>
+                                <p class="text-xs text-gray-500 mt-1">AI Readiness Deep Diagnostic + AI System Blueprint + Roadmap</p>
+                            </div>
                         </div>
                         <div class="text-center py-6 border-b border-gray-300">
-                            <div class="text-4xl font-bold mb-1">Subscription</div>
+                            <div class="text-4xl font-bold mb-1">$99</div>
+                            <div class="text-sm text-gray-500">One time</div>
                         </div>
                         <p class="text-gray-900 font-medium py-8 border-b border-gray-300 leading-relaxed text-sm">
-                            Deploy your AI systems and run them in production. Console, workflow builder, and agents in
-                            one place.
+                            Everything in one. Know, plan, execute in order.
                         </p>
                         <ul class="py-8 space-y-3 text-sm text-gray-800 flex-grow">
-                            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-black rounded-full"></span> AI
-                                Console</li>
                             <li class="flex items-center gap-2"><span class="w-1 h-1 bg-black rounded-full"></span>
-                                Workflow Builder</li>
-                            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-black rounded-full"></span> AI
-                                workflow deployment</li>
+                                Deep Diagnostic</li>
                             <li class="flex items-center gap-2"><span class="w-1 h-1 bg-black rounded-full"></span>
-                                Deployable agents</li>
+                                Blueprint</li>
                             <li class="flex items-center gap-2"><span class="w-1 h-1 bg-black rounded-full"></span>
-                                Agent orchestration</li>
+                                Roadmap</li>
                         </ul>
+                        <div class="text-sm text-green-600 font-medium mb-6">Save $48 compare to buying separately</div>
                         <button
-                            onclick="document.querySelector('.subscription-section').scrollIntoView({behavior: 'smooth'})"
-                            class="group flex items-center justify-center gap-3 text-black font-bold text-xl hover:text-gray-600 transition-colors mt-8 w-full border-t-2 border-black pt-6">
+                            class="group flex items-center justify-center gap-3 text-black font-bold text-xl hover:text-gray-600 transition-colors mt-auto w-full border-t-2 border-black pt-6">
                             <svg class="w-5 h-5 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M17 7v10H7" />
-                                <path d="M7 7l10 10" />
-                            </svg>
-                            View Deployment Plans
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Full Stack Banner -->
-                <div
-                    class="border-t-2 border-black pt-6 flex flex-col md:flex-row justify-between items-start md:items-center mb-16">
-                    <div>
-                        <div class="text-lg font-bold mb-2">Full Stack > Deep Diagnostic + Blueprint + Roadmap</div>
-                        <div class="text-sm text-gray-600 mb-1">Everything in one. Know, plan, execute in order.</div>
-                        <div class="text-sm text-green-600 font-medium">Save $48 compare to buying separately</div>
-                    </div>
-                    <div class="mt-6 md:mt-0 text-left md:text-right">
-                        <div class="text-3xl font-bold mb-1">$99</div>
-                        <div class="text-sm text-gray-500 mb-4">One time</div>
-                        <button
-                            class="group flex items-center justify-start md:justify-end gap-2 text-black font-bold hover:text-gray-600 transition-colors">
-                            <svg class="w-4 h-4 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M17 7v10H7" />
                                 <path d="M7 7l10 10" />
@@ -6919,6 +6928,7 @@
                         </button>
                     </div>
                 </div>
+
             </div>
 
             <!-- Black full width banner -->
@@ -6935,10 +6945,9 @@
         <div class="w-full bg-white text-black py-24 font-sans subscription-section">
             <div class="max-w-7xl mx-auto px-6 md:px-12">
                 <div class="mb-20 text-center md:text-left">
-                    <h2 class="text-5xl md:text-6xl font-bold tracking-tight mb-6">Where intent becomes operation.</h2>
-                    <p class="text-xl text-gray-700 font-medium leading-relaxed">
-                        Consult. Build. Deploy. From one place.<br>
-                        After your blueprint is ready, this is where it runs.
+                    <h2 class="text-5xl md:text-6xl font-medium tracking-tight mb-6">Run Your AI Systems.</h2>
+                    <p class="text-xl text-gray-700 font-light leading-relaxed">
+                        Everything you need to deploy, manage, build workflow from natural language, launch agents and scale AI operations from one platform.
                     </p>
                 </div>
 
@@ -7123,8 +7132,8 @@
         <div class="w-full bg-gray-50 text-black py-24 font-sans border-t border-gray-200">
             <div class="max-w-7xl mx-auto px-6 md:px-12">
                 <div class="mb-16 text-center md:text-left">
-                    <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Intelligence Credit Marketplace</h2>
-                    <p class="text-lg text-gray-600 font-medium">Scale your AI reasoning capacity anytime.</p>
+                    <h2 class="text-4xl md:text-5xl font-medium tracking-tight mb-4">Intelligence Credit Marketplace</h2>
+                    <p class="text-lg text-gray-600 font-light">Scale your AI reasoning capacity anytime.</p>
                 </div>
 
                 <!-- Starter Packs -->
@@ -7215,11 +7224,11 @@
             <div class="max-w-7xl mx-auto px-6 md:px-12">
                 <div class="mb-4">
                     <div class="text-sm font-medium mb-6">Privacy & Security</div>
-                    <h2 class="text-5xl md:text-6xl font-bold tracking-tight mb-10">Your data stays<br>where it belongs.
+                    <h2 class="text-5xl md:text-6xl font-medium tracking-tight mb-10">Your data stays<br>where it belongs.
                     </h2>
 
                     <div class="border-t border-white/20 pt-8 mt-12">
-                        <p class="text-lg md:text-xl font-medium mb-12">No training. No logging. No exceptions.
+                        <p class="text-lg md:text-xl font-light mb-12">No training. No logging. No exceptions.
                             Everything runs in your browser.</p>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-4xl">
@@ -7304,32 +7313,49 @@
         <!-- Pre-Footer CTA -->
         <div class="w-full bg-[#050505] text-white pt-12 pb-24 font-sans">
             <div class="max-w-7xl mx-auto px-6 md:px-12">
-                <h2 class="text-5xl md:text-6xl font-bold tracking-tight mb-10">Some decisions need<br>a conversation.
-                </h2>
-                <div class="max-w-2xl border-t border-white/20 pt-8 mb-10">
-                    <p class="text-white text-lg leading-relaxed font-medium">
-                        Book a strategy session with an Aivory expert. We'll review your diagnostic,
-                        sharpen your blueprint, and map your next move together.
-                    </p>
+                <!-- Headline -->
+                <h2 class="text-5xl md:text-6xl font-medium tracking-tight mb-6">Need Expert Guidance?</h2>
+                <!-- Bold subheadline -->
+                <p class="text-white text-xl md:text-2xl font-semibold mb-4">Some AI decisions are too important to leave to guesswork.</p>
+                <!-- Light subheadline -->
+                <p class="text-[#b2b2b2] text-lg md:text-xl font-light mb-10 max-w-4xl">Work directly with Aivory experts to validate your strategy, design custom AI systems, train your teams, and accelerate implementation.</p>
+                
+                <!-- Horizontal divider -->
+                <div class="border-t border-white/20 mb-12"></div>
+
+                <!-- 2x2 Service Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-14">
+                    <!-- Card 1: AI Strategy Consultation -->
+                    <div class="border border-white/10 p-8 hover:border-white/25 transition-colors">
+                        <h3 class="text-xl font-semibold text-white mb-3">AI Strategy Consultation</h3>
+                        <p class="text-[#b2b2b2] font-light leading-relaxed">Clarify priorities, validate opportunities, and sharpen your roadmap.</p>
+                    </div>
+                    <!-- Card 2: Custom AI Development -->
+                    <div class="border border-white/10 p-8 hover:border-white/25 transition-colors">
+                        <h3 class="text-xl font-semibold text-white mb-3">Custom AI Development</h3>
+                        <p class="text-[#b2b2b2] font-light leading-relaxed">Custom agents, workflows, integrations, and AI systems built around your business.</p>
+                    </div>
+                    <!-- Card 3: Corporate Training -->
+                    <div class="border border-white/10 p-8 hover:border-white/25 transition-colors">
+                        <h3 class="text-xl font-semibold text-white mb-3">Corporate Training</h3>
+                        <p class="text-[#b2b2b2] font-light leading-relaxed">Practical workshops and executive programs for teams adopting AI.</p>
+                    </div>
+                    <!-- Card 4: Enterprise Advisory -->
+                    <div class="border border-white/10 p-8 hover:border-white/25 transition-colors">
+                        <h3 class="text-xl font-semibold text-white mb-3">Enterprise Advisory</h3>
+                        <p class="text-[#b2b2b2] font-light leading-relaxed">Long-term support for AI transformation, governance, and implementation.</p>
+                    </div>
                 </div>
-                <div class="flex flex-wrap gap-12">
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-wrap gap-6">
                     <button onclick="openContactForm('consultation')"
-                        class="group flex items-center gap-3 text-white font-bold text-xl hover:text-gray-300 transition-colors">
-                        <svg class="w-5 h-5 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 7v10H7" />
-                            <path d="M7 7l10 10" />
-                        </svg>
-                        Book a Session
+                        class="px-8 py-4 bg-white text-black font-semibold hover:bg-gray-200 transition-colors text-lg">
+                        Book a Strategy Session
                     </button>
                     <button onclick="openContactForm('training')"
-                        class="group flex items-center gap-3 text-white font-bold text-xl hover:text-gray-300 transition-colors">
-                        <svg class="w-5 h-5 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 7v10H7" />
-                            <path d="M7 7l10 10" />
-                        </svg>
-                        Book a Corporate Training
+                        class="px-8 py-4 border border-white/30 text-white font-semibold hover:border-white/60 transition-colors text-lg">
+                        Talk to Our Team
                     </button>
                 </div>
             </div>
@@ -11230,6 +11256,190 @@
         });
     </script>
     <script src="led-hero-background.js"></script>
+
+    <!-- GSAP for Card Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            var container = document.querySelector('.gsap-card-container');
+            if (!container) return;
+            
+            var gsapCards = gsap.utils.toArray(container.querySelectorAll('.gsap-card'));
+            var totalCards = gsapCards.length;
+
+            ScrollTrigger.batch(gsapCards, {
+                start: "top 85%",
+                once: true,
+                onEnter: function(batch) { batch.forEach(function(card) { card.classList.add('animate'); }); },
+            });
+
+            ScrollTrigger.matchMedia({
+                "(min-width: 1025px)": function() {
+                    gsapCards.forEach(function(card, i) {
+                        if (i !== totalCards - 1) {
+                            var nextCard = gsapCards[i + 1];
+                            gsap.to(card, {
+                                scrollTrigger: {
+                                    trigger: nextCard,
+                                    start: "top 35%", 
+                                    end: "top 25%", 
+                                    scrub: true,
+                                },
+                                scale: 0.94 - (0.01 * (totalCards - i)),
+                                ease: "none"
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!-- Premium Scroll Reveal Animation -->
+    <script>
+        // Hero Rotating Subheadline — Crossfade + Vertical Shift
+        (function() {
+            var messages = [
+                'Start with clarity.<br>End with a system that runs.',
+                'Know what to build.<br>Before you build anything.',
+                'Discover where AI creates value.',
+                'Turn AI ambition into execution.',
+                'From opportunity to operation.',
+                'AI made practical.<br>Built for real business outcomes.'
+            ];
+            var currentIndex = 0;
+            var textEl = document.getElementById('hero-rotating-text');
+            var container = document.getElementById('hero-rotating-container');
+            if (!textEl || !container) return;
+
+            function rotateMessage() {
+                // Fade out current: move up 14px + opacity 0
+                textEl.style.opacity = '0';
+                textEl.style.transform = 'translateY(calc(-50% - 14px))';
+
+                setTimeout(function() {
+                    // Advance to next message
+                    currentIndex = (currentIndex + 1) % messages.length;
+                    textEl.innerHTML = messages[currentIndex];
+
+                    // Position below: start 14px lower
+                    textEl.style.transition = 'none';
+                    textEl.style.transform = 'translateY(calc(-50% + 14px))';
+                    textEl.style.opacity = '0';
+
+                    // Force reflow
+                    void textEl.offsetHeight;
+
+                    // Fade in: settle to center
+                    textEl.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                    textEl.style.opacity = '1';
+                    textEl.style.transform = 'translateY(-50%)';
+                }, 500);
+            }
+
+            setInterval(rotateMessage, 4500);
+        })();
+    </script>
+
+    <!-- Premium Scroll Reveal Animation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for GSAP to be available
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+            
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Target only section-level headings and subheadlines (not individual cards/buttons)
+            const revealElements = document.querySelectorAll([
+                '#homepage > div > div > h2',
+                '#homepage > div > div > p',
+                '#homepage > div > div > div > h2',
+                '#homepage > div > div > div > p',
+                '#homepage .max-w-7xl > h2',
+                '#homepage .max-w-7xl > p',
+                '#homepage .max-w-7xl > div > h2',
+                '#homepage .max-w-7xl > div > p'
+            ].join(','));
+
+            // Apply staggered fade-up reveal to each element
+            revealElements.forEach(function(el) {
+                // Skip elements inside hero, stacking cards, or the credit marketplace grid
+                if (el.closest('.hero')) return;
+                if (el.closest('.gsap-card-container')) return;
+                if (el.closest('.gsap-card')) return;
+                if (el.closest('.grid')) return;
+                
+                gsap.set(el, { 
+                    opacity: 0, 
+                    y: 30,
+                    willChange: 'opacity, transform'
+                });
+
+                gsap.to(el, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.7,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 88%',
+                        end: 'top 60%',
+                        toggleActions: 'play none none none',
+                        once: true
+                    }
+                });
+            });
+
+            // Reveal grid containers as a whole (not individual items)
+            const gridContainers = document.querySelectorAll('#homepage .grid');
+            gridContainers.forEach(function(grid) {
+                if (grid.closest('.hero')) return;
+                if (grid.closest('.gsap-card-container')) return;
+                
+                gsap.set(grid, {
+                    opacity: 0,
+                    y: 30,
+                    willChange: 'opacity, transform'
+                });
+
+                gsap.to(grid, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: grid,
+                        start: 'top 88%',
+                        toggleActions: 'play none none none',
+                        once: true
+                    }
+                });
+            });
+
+            // Subtle parallax on section dividers/borders
+            const dividers = document.querySelectorAll('#homepage .border-t');
+            dividers.forEach(function(divider) {
+                if (divider.closest('.hero')) return;
+                if (divider.closest('.grid')) return;
+                gsap.from(divider, {
+                    scaleX: 0,
+                    transformOrigin: 'left center',
+                    duration: 1,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: divider,
+                        start: 'top 90%',
+                        toggleActions: 'play none none none',
+                        once: true
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 
 </html>
